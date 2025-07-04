@@ -40,7 +40,17 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public void update(User user) {
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE library.user SET name = ?, email = ?, address = ?, phone = ? WHERE id_user = ?;")){
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getAddress());
+            ps.setString(4, user.getPhone());
+            ps.setInt(5, user.getId());
 
+            ps.execute();
+        }catch (SQLException e){
+            log.error("Error trying to update the user '{}' with the id '{}'", user.getName(), user.getId());
+        }
     }
 
     @Override
@@ -81,7 +91,7 @@ public class UserDaoJdbc implements UserDao {
     public List<User> findByName(String name) {
         List<User> users = new ArrayList<>();
         try (PreparedStatement ps = findByNamePreparedStatement(name);
-            ResultSet rs = ps.executeQuery();){
+            ResultSet rs = ps.executeQuery()){
 
             while (rs.next()){
                 users.add(User.builder()
