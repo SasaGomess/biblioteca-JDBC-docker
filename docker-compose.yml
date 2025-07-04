@@ -6,7 +6,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: devroot
     ports:
-        - "3307:3306"
+        - "3306:3306"
     volumes:
       - library-app-data:/var/lib/mysql
 
