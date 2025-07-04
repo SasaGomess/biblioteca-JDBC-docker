@@ -45,8 +45,8 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public void deleteById(Integer id) {
-        String sql = "DELETE FROM library.user WHERE (id_user = ?);";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+
+        try (PreparedStatement st = conn.prepareStatement("DELETE FROM library.user WHERE (id_user = ?);")) {
             st.setInt(1, id);
             st.execute();
         } catch (SQLException e) {
@@ -79,7 +79,24 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public List<User> findByName(String name) {
-        return List.of();
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement ps = findByNamePreparedStatement(name);
+            ResultSet rs = ps.executeQuery();){
+
+            while (rs.next()){
+                users.add(User.builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id_user"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getNString("phone"))
+                        .address(rs.getString("address"))
+                        .build());
+            }
+
+        }catch (SQLException e){
+            log.error("Error trying to find user by '{}' name", name);
+        }
+        return users;
     }
 
     @Override
@@ -107,6 +124,12 @@ public class UserDaoJdbc implements UserDao {
         String sql = "SELECT * FROM library.user WHERE (id_user = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, id);
+        return ps;
+    }
+    private PreparedStatement findByNamePreparedStatement(String name) throws SQLException{
+        String sql = "SELECT * FROM library.user WHERE name LIKE ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, String.format("%%%s%%", name));
         return ps;
     }
 }
