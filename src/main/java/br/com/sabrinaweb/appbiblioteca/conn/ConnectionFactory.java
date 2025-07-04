@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class ConnectionFactory {
     public static Connection getConnection() throws SQLException {
-        String url = "dbc:mysql://localhost:3306/library";
-        String user = "devroot";
-        String password = "root";
+        String url = "jdbc:mysql://localhost:3306/library";
+        String user = "root";
+        String password = "devroot";
         return DriverManager.getConnection(url, user, password);
     }
 }
