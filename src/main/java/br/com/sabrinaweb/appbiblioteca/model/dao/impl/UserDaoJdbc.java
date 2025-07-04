@@ -6,7 +6,9 @@ import lombok.extern.log4j.Log4j2;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -19,29 +21,36 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public void insert(User user) {
-        String sql = "INSERT INTO library.user (name, email, phone, address) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO library.user (name, email, phone, address) VALUES (?, ?, ?, ?);";
         log.info("Saving the user '{}'", user.getName());
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)){
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPhone());
             ps.setString(4, user.getAddress());
 
             ps.execute();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Error trying to insert the user");
+
         }
     }
 
     @Override
     public void update(User user) {
-        
+
     }
 
     @Override
     public void deleteById(Integer id) {
-
+        String sql = "DELETE FROM library.user WHERE (id_user = ?);";
+        try (PreparedStatement st = conn.prepareStatement(sql)) {
+            st.setInt(1, id);
+            st.execute();
+        } catch (SQLException e) {
+            log.error("Error trying to delete User by id '{}'", id);
+        }
     }
 
     @Override
@@ -50,7 +59,7 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public List<User> findByName() {
+    public List<User> findByName(String name) {
         return List.of();
     }
 }
