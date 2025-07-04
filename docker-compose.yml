@@ -1,0 +1,14 @@
+version: '2.4'
+services:
+  db:
+    image: mysql
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: devroot
+    ports:
+        - "3307:3306"
+    volumes:
+      - library-app-data:/var/lib/mysql
+
+volumes:
+  library-app-data:
