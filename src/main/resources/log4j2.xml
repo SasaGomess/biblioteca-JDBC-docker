@@ -4,9 +4,14 @@
         <Console name="LogToConsole" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{1.} - %msg%n"/>
         </Console>
+        <File name="LogToFile" fileName="logs/app.log">
+            <PatternLayout>
+            <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+        </PatternLayout>
+        </File>
     </Appenders>
     <Loggers>
-        <Logger name="br.com.sabrinaweb" level="info" additivity="false">
+        <Logger name="br.com.sabrinaweb.appbiblioteca" level="info" additivity="false">
             <AppenderRef ref="LogToConsole"/>
         </Logger>
         <Root level="error">
