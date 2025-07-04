@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 public class UserDaoJdbc implements UserDao {
@@ -79,5 +80,33 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public List<User> findByName(String name) {
         return List.of();
+    }
+
+    @Override
+    public Optional<User> findById(Integer id) {
+        log.info("Finding user by id '{}'", id);
+        try (PreparedStatement ps = findByIdPreparedStatement(id);
+             ResultSet rs = ps.executeQuery()){
+            if (rs.next()){
+                return Optional.of(User.builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id_user"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getNString("phone"))
+                        .address(rs.getString("address"))
+                        .build());
+            }
+
+        }catch (SQLException e){
+            log.error("Error trying to find user by the '{}' id", id, e);
+        }
+        return Optional.empty();
+    }
+
+    private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException {
+        String sql = "SELECT * FROM library.user WHERE (id_user = ?);";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, id);
+        return ps;
     }
 }
