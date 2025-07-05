@@ -97,13 +97,6 @@ public class BookDaoJdbc implements BookDao {
         return books;
     }
 
-    private PreparedStatement findByTitlePreparedStatement(String title) throws SQLException {
-        String sql = "SELECT * FROM library.book WHERE title LIKE ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, String.format("%%%s%%", title));
-        return ps;
-    }
-
     @Override
     public List<Book> findAvailableBooks(String name) {
         String sql = "SELECT * FROM library.book WHERE id_book NOT IN (SELECT l.id_book FROM library_loan AS l);";
@@ -131,6 +124,35 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public Optional<Book> findById(Integer id) {
+        try (PreparedStatement ps = findByIdPreparedStatement(id);
+        ResultSet rs = ps.executeQuery()){
+
+            if (rs.next()){
+                return Optional.of(Book.builder()
+                        .isbn(rs.getString("isbn"))
+                        .id(rs.getInt("id_book"))
+                        .genre(rs.getString("genre"))
+                        .title(rs.getString("title"))
+                        .publisher(rs.getString("publisher"))
+                        .year_public(rs.getInt("year_public"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .build());
+            }
+        }catch (SQLException e){
+            log.error("Error trying to find the book by id");
+        }
         return Optional.empty();
+    }
+    private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException {
+        String sql = "SELECT * FROM library.book WHERE (id_book = ?);";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, id);
+        return ps;
+    }
+    private PreparedStatement findByTitlePreparedStatement(String title) throws SQLException {
+        String sql = "SELECT * FROM library.book WHERE title LIKE ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, String.format("%%%s%%", title));
+        return ps;
     }
 }
