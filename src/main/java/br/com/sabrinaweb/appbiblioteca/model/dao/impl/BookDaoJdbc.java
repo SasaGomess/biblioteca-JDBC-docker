@@ -5,10 +5,8 @@ import br.com.sabrinaweb.appbiblioteca.model.entities.Book;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +14,9 @@ import java.util.Optional;
 public class BookDaoJdbc implements BookDao {
     private Connection conn;
 
+    public BookDaoJdbc(Connection conn) {
+        this.conn = conn;
+    }
 
     @Override
     public void insert(Book book) {
@@ -35,6 +36,7 @@ public class BookDaoJdbc implements BookDao {
             log.error("Error trying to insert the book '{}'", book.getTitle());
         }
     }
+
     @Override
     public void update(Book book) {
 
@@ -47,17 +49,56 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public List<Book> findAllBooks() {
-        return List.of();
+        List<Book> books = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM library.book");
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                books.add(Book.builder()
+                        .isbn(rs.getString("isbn"))
+                        .id(rs.getInt("id_book"))
+                        .genre(rs.getString("genre"))
+                        .title(rs.getString("title"))
+                        .publisher(rs.getString("publisher"))
+                        .year_public(rs.getInt("year_public"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .build());
+            }
+
+        } catch (SQLException e) {
+            log.error("Error while trying to find all books");
+        }
+        return books;
     }
 
     @Override
-    public List<Book> findByTitle(String name) {
+    public List<Book> findByTitle(String title) {
         return List.of();
     }
 
     @Override
     public List<Book> findAvailableBooks(String name) {
-        return List.of();
+        String sql = "SELECT * FROM library.book WHERE id_book NOT IN (SELECT l.id_book FROM library_loan AS l);";
+        List<Book> books = new ArrayList<>();
+        try (PreparedStatement st = conn.prepareStatement(sql);
+             ResultSet rs = st.executeQuery()) {
+            if (!rs.next()) return books;
+
+            while (rs.next()){
+                books.add(Book.builder()
+                        .isbn(rs.getString("isbn"))
+                        .id(rs.getInt("id_book"))
+                        .genre(rs.getString("genre"))
+                        .title(rs.getString("title"))
+                        .publisher(rs.getString("publisher"))
+                        .year_public(rs.getInt("year_public"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .build());
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to found available books");
+        }
+        return books;
     }
 
     @Override
