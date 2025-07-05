@@ -2,7 +2,6 @@ package br.com.sabrinaweb.appbiblioteca.model.dao.impl;
 
 import br.com.sabrinaweb.appbiblioteca.model.dao.BookDao;
 import br.com.sabrinaweb.appbiblioteca.model.entities.Book;
-import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.*;
@@ -73,7 +72,32 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public List<Book> findByTitle(String title) {
-        return List.of();
+        List<Book> books = new ArrayList<>();
+        try (PreparedStatement ps = findByTitlePreparedStatement(title);
+             ResultSet rs = ps.executeQuery()){
+
+            while (rs.next()){
+                books.add(Book.builder()
+                        .isbn(rs.getString("isbn"))
+                        .id(rs.getInt("id_book"))
+                        .genre(rs.getString("genre"))
+                        .title(rs.getString("title"))
+                        .publisher(rs.getString("publisher"))
+                        .year_public(rs.getInt("year_public"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .build());
+            }
+        }catch (SQLException e){
+            log.error("Error trying to find book by '{}' name", title);
+        }
+        return books;
+    }
+
+    private PreparedStatement findByTitlePreparedStatement(String title) throws SQLException {
+        String sql = "SELECT * FROM library.book WHERE title LIKE ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, String.format("%%%s%%", title));
+        return ps;
     }
 
     @Override
