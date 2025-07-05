@@ -43,7 +43,11 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public void deleteById(Integer id) {
-
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM library.book WHERE id_book = ?")){
+            ps.setInt(1, id);
+        }catch (SQLException e){
+            log.error("Error trying to delete book with the id '{}'", id);
+        }
     }
 
     @Override
