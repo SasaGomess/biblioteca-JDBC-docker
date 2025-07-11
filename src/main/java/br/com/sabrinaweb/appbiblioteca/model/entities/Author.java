@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 @Builder
-public class Autor {
+public class Author {
     private Integer id;
     private String name;
     private Date birthdate;
