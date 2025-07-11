@@ -43,7 +43,16 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public void update(Author author) {
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE `library`.`author` SET name = ?, birthdate = ?, nationality = ? WHERE id_autor = ?")) {
+            ps.setString(1, author.getName());
+            ps.setDate(2, Date.valueOf(author.getBirthdate()));
+            ps.setString(3, author.getNationality());
+            ps.setInt(4, author.getId());
 
+            ps.execute();
+        } catch (SQLException e) {
+            log.error("Error trying to update the author '{}', where the id is '{}'", author.getName(), author.getId());
+        }
     }
 
     @Override
