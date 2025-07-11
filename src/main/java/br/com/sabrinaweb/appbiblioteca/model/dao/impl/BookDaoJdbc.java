@@ -27,7 +27,7 @@ public class BookDaoJdbc implements BookDao {
             ps.setString(1, book.getTitle());
             ps.setString(2, book.getGenre());
             ps.setString(3, book.getPublisher());
-            ps.setString(4, book.getIsbn());
+            ps.setString(4,  String.format("978-85-0000000-%s",book.getIsbn()));
             ps.setInt(5, book.getNumberPages());
             ps.setDate(6, new Date(book.getYear_public()));
             ps.execute();
@@ -38,13 +38,11 @@ public class BookDaoJdbc implements BookDao {
 
     @Override
     public void update(Book book) {
-        try (PreparedStatement ps = conn.prepareStatement("UPDATE library.book SET title = ?, year_public = ?, number_pages = ?, publisher = ?, genre = ? WHERE id_book = ?;")){
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE library.book SET title = ?, year_public = ?, publisher = ?, genre = ? WHERE id_book = ?;")){
             ps.setString(1, book.getTitle());
             ps.setInt(2, book.getYear_public());
-            ps.setInt(3, book.getNumberPages());
-            ps.setString(4, book.getPublisher());
-            ps.setString(5, book.getGenre());
-            ps.setInt(6, book.getId());
+            ps.setString(3, book.getPublisher());
+            ps.setInt(4, book.getId());
 
             ps.execute();
         }catch (SQLException e){
@@ -53,11 +51,11 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Integer idBook) {
         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM library.book WHERE id_book = ?")){
-            ps.setInt(1, id);
+            ps.setInt(1, idBook);
         }catch (SQLException e){
-            log.error("Error trying to delete book with the id '{}'", id);
+            log.error("Error trying to delete book with the id '{}'", idBook);
         }
     }
 
@@ -109,7 +107,7 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public List<Book> findAvailableBooks(String name) {
+    public List<Book> findAvailableBooks(String title) {
         String sql = "SELECT * FROM library.book WHERE id_book NOT IN (SELECT l.id_book FROM library_loan AS l);";
         List<Book> books = new ArrayList<>();
         try (PreparedStatement st = conn.prepareStatement(sql);
@@ -134,8 +132,8 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public Optional<Book> findById(Integer id) {
-        try (PreparedStatement ps = findByIdPreparedStatement(id);
+    public Optional<Book> findById(Integer idBook) {
+        try (PreparedStatement ps = findByIdPreparedStatement(idBook);
         ResultSet rs = ps.executeQuery()){
 
             if (rs.next()){
@@ -150,7 +148,7 @@ public class BookDaoJdbc implements BookDao {
                         .build());
             }
         }catch (SQLException e){
-            log.error("Error trying to find the book by id");
+            log.error("Error trying to find the book by id '{}'", idBook);
         }
         return Optional.empty();
     }
