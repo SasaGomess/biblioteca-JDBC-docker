@@ -95,6 +95,20 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public Optional<Author> findById(Integer id) {
+        try (PreparedStatement ps = findByIdPreparedStatement(id);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return Optional.of(Author.builder()
+                        .id(rs.getInt("id_autor"))
+                        .name(rs.getString("name"))
+                        .birthdate(rs.getDate("birthdate").toLocalDate())
+                        .nationality(rs.getString("nationality"))
+                        .build());
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to find the author by id '{}'", id);
+        }
         return Optional.empty();
     }
 
@@ -107,5 +121,9 @@ public class AuthorDaoJdbc implements AuthorDao {
         ps.setString(1, String.format("%%%s%%", name));
         return ps;
     }
-
+    private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`author` WHERE id_author = ?;");
+        ps.setInt(1, id);
+        return ps;
+    }
 }
