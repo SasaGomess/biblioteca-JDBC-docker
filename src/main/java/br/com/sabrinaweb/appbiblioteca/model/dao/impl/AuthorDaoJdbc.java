@@ -4,10 +4,8 @@ import br.com.sabrinaweb.appbiblioteca.model.dao.AuthorDao;
 import br.com.sabrinaweb.appbiblioteca.model.entities.Author;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +55,22 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public List<Author> findAllAutors() {
-        return List.of();
+        List<Author> autors = new ArrayList<>();
+
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`author`;");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                autors.add(Author.builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id_autor"))
+                        .birthdate(rs.getDate("birthdate").toLocalDate())
+                        .nationality(rs.getString("nationality"))
+                        .build());
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to find all authors");
+        }
+        return autors;
     }
 
     @Override
