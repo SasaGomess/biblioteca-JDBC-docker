@@ -75,7 +75,22 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public List<Author> findByName(String name) {
-        return List.of();
+        List<Author> autors = new ArrayList<>();
+        try (PreparedStatement ps = findByNamePreparedStatement(name);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                autors.add(Author.builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id_autor"))
+                        .birthdate(rs.getDate("birthdate").toLocalDate())
+                        .nationality(rs.getString("nationality"))
+                        .build());
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to find author by name '{}'", name);
+        }
+        return autors;
     }
 
     @Override
@@ -87,4 +102,10 @@ public class AuthorDaoJdbc implements AuthorDao {
     public List<Author> findAutorByWroteBook(Integer idBook) {
         return List.of();
     }
+    private PreparedStatement findByNamePreparedStatement(String name) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`author` WHERE name LIKE ?;");
+        ps.setString(1, String.format("%%%s%%", name));
+        return ps;
+    }
+
 }
