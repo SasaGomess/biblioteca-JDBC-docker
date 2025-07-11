@@ -6,6 +6,9 @@ import br.com.sabrinaweb.appbiblioteca.model.entities.LibraryLoan;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +23,20 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     @Override
     public void insert(LibraryLoan libraryLoan) {
+        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO `library`.`library_loan` (id_book, id_user, status, loan_date, due_date) VALUES (?, ?, ?, ?, ?)")) {
+            conn.setAutoCommit(false);
+            ps.setInt(1, libraryLoan.getBook().getId());
+            ps.setInt(2, libraryLoan.getUser().getId());
+            ps.setString(3, libraryLoan.getStatus());
+            ps.setDate(4, Date.valueOf(libraryLoan.getLoanDate()));
+            ps.setDate(5, Date.valueOf(libraryLoan.getDueDate()));
 
+            ps.execute();
+            conn.commit();
+            conn.setAutoCommit(true);
+        } catch (SQLException e) {
+            log.error("Error trying to register the new loan");
+        }
     }
 
     @Override
