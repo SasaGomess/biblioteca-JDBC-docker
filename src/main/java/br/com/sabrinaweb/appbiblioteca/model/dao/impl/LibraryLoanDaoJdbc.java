@@ -55,8 +55,13 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     }
 
     @Override
-    public void delete(Integer idLoan) {
-
+    public void deleteById(Integer idLoan) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM `library`.`library_loan` WHERE id_loan = ?")) {
+            ps.setInt(1, idLoan);
+            ps.execute();
+        } catch (SQLException e) {
+            log.error("Error trying to delete the loan '{}'", idLoan);
+        }
     }
 
     @Override

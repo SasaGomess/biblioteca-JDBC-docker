@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface LibraryLoanDao {
     void insert(LibraryLoan libraryLoan);
     void update(LibraryLoan libraryLoan);
-    void delete(Integer idLoan);
+    void deleteById(Integer idLoan);
     List<LibraryLoan> findAllLoan();
     int isLoanBookAvailable(Integer idBook);
     Optional<LibraryLoan> findById(Integer id);
