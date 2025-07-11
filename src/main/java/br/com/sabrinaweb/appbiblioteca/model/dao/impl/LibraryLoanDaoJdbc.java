@@ -147,7 +147,26 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     @Override
     public Map<Integer, User> findUsersWithMoreThanOneBookBorrowed() {
-        return Map.of();
+        Map<Integer, User> usersWithMoreThanOneBooks = new HashMap<>();
+
+        try (PreparedStatement ps = conn.prepareStatement("SELECT ll.id_loan, us.* FROM `library`.`user` AS us INNER JOIN `library`.`library_loan` AS ll ON us.id_user = ll.id_user GROUP BY ll.id_user HAVING COUNT(id_user) > 1");
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Integer idLoan = LibraryLoan.builder().id(rs.getInt("id_loan")).build().getId();
+                User user = User.builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id_user"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getNString("phone"))
+                        .address(rs.getString("address"))
+                        .build();
+                usersWithMoreThanOneBooks.put(idLoan, user);
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to find the user with more than one book borrowed");
+        }
+        return usersWithMoreThanOneBooks;
     }
 
     private PreparedStatement bookAvailablePreparedStatement(Integer idBook) throws SQLException {
