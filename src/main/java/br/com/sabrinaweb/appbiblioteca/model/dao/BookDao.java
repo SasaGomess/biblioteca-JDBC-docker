@@ -11,6 +11,7 @@ public interface BookDao {
     void deleteById(Integer id);
     List<Book> findAllBooks();
     List<Book> findByTitle(String name);
-    List<Book> findAvailableBooks(String name);
+    List<Book> findAvailableBooks();
+    List<Book> findAllBooksOfAAutor(Integer id_autor);
     Optional<Book> findById(Integer id);
 }

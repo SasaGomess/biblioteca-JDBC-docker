@@ -107,7 +107,7 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public List<Book> findAvailableBooks(String title) {
+    public List<Book> findAvailableBooks() {
         String sql = "SELECT * FROM library.book WHERE id_book NOT IN (SELECT l.id_book FROM library_loan AS l);";
         List<Book> books = new ArrayList<>();
         try (PreparedStatement st = conn.prepareStatement(sql);
@@ -152,6 +152,37 @@ public class BookDaoJdbc implements BookDao {
         }
         return Optional.empty();
     }
+    @Override
+    public List<Book> findAllBooksOfAAutor(Integer idAutor) {
+        List<Book> books = new ArrayList<>();
+        try (PreparedStatement ps = findBookByAutorIdPreparedStatement(idAutor);
+             ResultSet rs = ps.executeQuery()){
+            while (rs.next()){
+                books.add(Book.builder()
+                        .isbn(rs.getString("isbn"))
+                        .title(rs.getString("title"))
+                        .publisher(rs.getString("publisher"))
+                        .year_public(rs.getInt("year_public"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .id(rs.getInt("id_book"))
+                        .genre(rs.getString("genre"))
+                        .build());
+            }
+
+        }catch (SQLException e){
+            log.error("Error trying to find the books of the autor '{}'", idAutor);
+        }
+        return books;
+    }
+    private PreparedStatement findBookByAutorIdPreparedStatement(Integer idAutor) throws SQLException{
+        String sql = "SELECT bo.* from library.autor AS au " +
+                "INNER JOIN library.book_autor AS ba ON au.id_autor = ba.id_autor" +
+                "INNER JOIN library.book AS bo ON ba.id_book = bo.id_book WHERE ba.id_autor = ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, idAutor);
+        return ps;
+    }
+
     private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException {
         String sql = "SELECT * FROM library.book WHERE (id_book = ?);";
         PreparedStatement ps = conn.prepareStatement(sql);
