@@ -114,7 +114,23 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public List<Author> findAutorByWroteBook(Integer idBook) {
-        return List.of();
+        List<Author> autors = new ArrayList<>();
+        try (PreparedStatement ps = findAuthorByBookIdPreparedStatement(idBook);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()){
+                autors.add(Author.builder()
+                        .name(rs.getString("name"))
+                        .id(rs.getInt("id_autor"))
+                        .birthdate(rs.getDate("birthdate").toLocalDate())
+                        .nationality(rs.getString("nationality"))
+                        .build());
+            }
+
+        } catch (SQLException e) {
+            log.error("Error trying to find the author(s) of the book '{}'", idBook);
+        }
+        return autors;
     }
     private PreparedStatement findByNamePreparedStatement(String name) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`author` WHERE name LIKE ?;");
@@ -124,6 +140,14 @@ public class AuthorDaoJdbc implements AuthorDao {
     private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`author` WHERE id_author = ?;");
         ps.setInt(1, id);
+        return ps;
+    }
+    private PreparedStatement findByBookIdPreparedStatement(Integer idBook) throws SQLException {
+        String sql = "SELECT au.* from library.author AS au" +
+                "INNER JOIN library.book_autor AS ba ON au.id_author = ba.id_autor" +
+                "INNER JOIN library.book AS bo ON ba.id_book = bo.id_book WHERE ba.id_book = ?;";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, idBook);
         return ps;
     }
 }
