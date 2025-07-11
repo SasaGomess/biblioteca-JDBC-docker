@@ -87,8 +87,16 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     @Override
     public int isLoanBookAvailable(Integer idBook) {
-        return 0;
-    }
+        int value = 1;
+        try (PreparedStatement ps = bookAvailablePreparedStatement(idBook);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) value = rs.getInt("isNotAvailable");
+
+        } catch (SQLException e) {
+            log.error("Error trying to verify if the book '{}' is available for loan", idBook);
+        }
+        return value;    }
 
     @Override
     public Optional<LibraryLoan> findById(Integer id) {
@@ -103,5 +111,11 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     @Override
     public Map<Integer, User> findUsersWithMoreThanOneBookBorrowed() {
         return Map.of();
+    }
+
+    private PreparedStatement bookAvailablePreparedStatement(Integer idBook) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS isNotAvailable FROM `library`.`library_loan` WHERE id_book = ? AND return_date IS NULL;");
+        ps.setInt(1, idBook);
+        return ps;
     }
 }
