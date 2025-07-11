@@ -3,6 +3,7 @@ package br.com.sabrinaweb.appbiblioteca.model.entities;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -12,7 +13,7 @@ public class LibraryLoan {
     private Book book;
     private User user;
     private String status;
-    private Date dueDate;
-    private Date loanDate;
-    private Date returnDate;
+    private LocalDate dueDate;
+    private LocalDate loanDate;
+    private LocalDate returnDate;
 }

@@ -142,7 +142,7 @@ public class AuthorDaoJdbc implements AuthorDao {
         ps.setInt(1, id);
         return ps;
     }
-    private PreparedStatement findByBookIdPreparedStatement(Integer idBook) throws SQLException {
+    private PreparedStatement findAuthorByBookIdPreparedStatement(Integer idBook) throws SQLException {
         String sql = "SELECT au.* from library.author AS au" +
                 "INNER JOIN library.book_autor AS ba ON au.id_author = ba.id_autor" +
                 "INNER JOIN library.book AS bo ON ba.id_book = bo.id_book WHERE ba.id_book = ?;";

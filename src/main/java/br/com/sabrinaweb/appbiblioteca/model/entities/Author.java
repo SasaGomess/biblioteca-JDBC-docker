@@ -3,13 +3,13 @@ package br.com.sabrinaweb.appbiblioteca.model.entities;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Builder
 public class Author {
     private Integer id;
     private String name;
-    private Date birthdate;
+    private LocalDate birthdate;
     private String nationality;
 }
