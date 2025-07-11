@@ -10,10 +10,10 @@ import br.com.sabrinaweb.appbiblioteca.model.entities.Book;
 import java.sql.SQLException;
 
 public class DaoFactory {
-    public static UserDao createUser() {
+    public static UserDao createUserDao() {
         return new UserDaoJdbc(ConnectionFactory.getConnection());
     }
-    public static BookDao createBook() {
+    public static BookDao createBookDao() {
         return new BookDaoJdbc(ConnectionFactory.getConnection());
     }
     public static AuthorDao createAuthorDao() {

@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 @Log4j2
 public class AuthorService {
-    private static Scanner SCANNER = new Scanner(System.in);
+    private static final Scanner SCANNER = new Scanner(System.in);
     private static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final AuthorDao authorDao = DaoFactory.createAuthorDao();
 
