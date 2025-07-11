@@ -34,7 +34,11 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public void deleteById(Integer id) {
-
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM `library`.`author` WHERE (id_author = ?)")) {
+            ps.setInt(1, id);
+        } catch (SQLException e) {
+            log.error("Error trying to delete the author by id '{}'", id);
+        }
     }
 
     @Override
