@@ -7,10 +7,8 @@ import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.sql.Date;
+import java.util.*;
 
 @Log4j2
 public class LibraryLoanDaoJdbc implements LibraryLoanDao {
@@ -123,7 +121,28 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     @Override
     public Map<Integer, Book> findBooksBorrowedByStatus(String status) {
-        return Map.of();
+        Map<Integer, Book> booksBorrowedFound = new HashMap<>();
+        try (PreparedStatement ps = findBooksBorrowedByStatusPreparedStatement(status);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Integer idLoan = LibraryLoan.builder().id(rs.getInt("id_loan")).build().getId();
+                Book book = Book.builder()
+                        .isbn(rs.getString("isbn"))
+                        .title(rs.getString("title"))
+                        .publisher(rs.getString("publisher"))
+                        .year_public(rs.getInt("year_public"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .id(rs.getInt("id_book"))
+                        .genre(rs.getString("genre"))
+                        .build();
+
+                booksBorrowedFound.put(idLoan, book);
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to find the book in the loan service by status");
+        }
+        return booksBorrowedFound;
     }
 
     @Override
@@ -139,6 +158,12 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException{
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`library_loan` WHERE id_loan = ?;");
         ps.setInt(1, id);
+        return ps;
+    }
+    private PreparedStatement findBooksBorrowedByStatusPreparedStatement(String status) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT bo.*, ll.id_loan FROM library.book AS bo INNER JOIN library.library_loan AS ll ON ll.id_book = bo.id_book WHERE status LIKE ?");
+        ps.setString(1, String.format("%%%s%%", status));
+        ps.execute();
         return ps;
     }
 }
