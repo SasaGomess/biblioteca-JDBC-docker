@@ -100,6 +100,24 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     @Override
     public Optional<LibraryLoan> findById(Integer id) {
+        try (PreparedStatement ps = findByIdPreparedStatement(id);
+             ResultSet rs = ps.executeQuery()){
+            if (rs.next()){
+                Book book = Book.builder().id(rs.getInt("id_book")).build();
+                User user = User.builder().id(rs.getInt("id_user")).build();
+                return Optional.of(LibraryLoan.builder()
+                        .id(rs.getInt("id_loan"))
+                        .book(book)
+                        .user(user)
+                        .status(rs.getString("status"))
+                        .loanDate(rs.getDate("loan_date").toLocalDate())
+                        .dueDate(rs.getDate("due_date").toLocalDate())
+                        .returnDate(rs.getDate("return_date").toLocalDate())
+                        .build());
+            }
+        }catch (SQLException e){
+            log.error("Error trying to find the loan by id '{}'", id);
+        }
         return Optional.empty();
     }
 
@@ -116,6 +134,11 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     private PreparedStatement bookAvailablePreparedStatement(Integer idBook) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS isNotAvailable FROM `library`.`library_loan` WHERE id_book = ? AND return_date IS NULL;");
         ps.setInt(1, idBook);
+        return ps;
+    }
+    private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException{
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`library_loan` WHERE id_loan = ?;");
+        ps.setInt(1, id);
         return ps;
     }
 }
