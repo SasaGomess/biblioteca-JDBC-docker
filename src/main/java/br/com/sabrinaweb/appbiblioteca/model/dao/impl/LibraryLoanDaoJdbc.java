@@ -4,6 +4,7 @@ import br.com.sabrinaweb.appbiblioteca.model.dao.LibraryLoanDao;
 import br.com.sabrinaweb.appbiblioteca.model.entities.Book;
 import br.com.sabrinaweb.appbiblioteca.model.entities.LibraryLoan;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
+import lombok.extern.log4j.Log4j2;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Log4j2
 public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     private Connection conn;
@@ -41,7 +43,15 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     @Override
     public void update(LibraryLoan libraryLoan) {
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE `library`.`library_loan` SET status = ? returnDate = ? WHERE id_loan = ? ")) {
+            ps.setString(1, libraryLoan.getStatus());
+            ps.setDate(2, Date.valueOf(libraryLoan.getReturnDate()));
+            ps.setInt(3, libraryLoan.getId());
 
+            ps.execute();
+        } catch (SQLException e) {
+            log.error("Error trying to update the loan service");
+        }
     }
 
     @Override
