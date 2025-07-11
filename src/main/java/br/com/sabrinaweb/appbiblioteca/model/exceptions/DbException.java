@@ -1,4 +1,4 @@
-package br.com.sabrinaweb.appbiblioteca.conn.exeptions;
+package br.com.sabrinaweb.appbiblioteca.model.exceptions;
 
 public class DbException extends RuntimeException {
 

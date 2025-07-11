@@ -1,6 +1,6 @@
 package br.com.sabrinaweb.appbiblioteca.conn;
 
-import br.com.sabrinaweb.appbiblioteca.conn.exeptions.DbException;
+import br.com.sabrinaweb.appbiblioteca.model.exceptions.DbException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
