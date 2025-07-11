@@ -3,6 +3,7 @@ package br.com.sabrinaweb.appbiblioteca.service;
 import br.com.sabrinaweb.appbiblioteca.model.dao.BookDao;
 import br.com.sabrinaweb.appbiblioteca.model.dao.DaoFactory;
 import br.com.sabrinaweb.appbiblioteca.model.entities.Book;
+import br.com.sabrinaweb.appbiblioteca.model.exceptions.InvalidIdException;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;

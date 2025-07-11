@@ -5,6 +5,8 @@ import br.com.sabrinaweb.appbiblioteca.model.dao.LibraryLoanDao;
 import br.com.sabrinaweb.appbiblioteca.model.entities.Book;
 import br.com.sabrinaweb.appbiblioteca.model.entities.LibraryLoan;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
+import br.com.sabrinaweb.appbiblioteca.model.exceptions.BookNotAvailableForLoanException;
+import br.com.sabrinaweb.appbiblioteca.model.exceptions.InvalidIdException;
 import lombok.extern.log4j.Log4j2;
 
 import java.time.LocalDate;
