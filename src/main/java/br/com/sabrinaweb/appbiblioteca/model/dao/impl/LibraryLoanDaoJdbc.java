@@ -6,10 +6,8 @@ import br.com.sabrinaweb.appbiblioteca.model.entities.LibraryLoan;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import lombok.extern.log4j.Log4j2;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,7 +64,25 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
     @Override
     public List<LibraryLoan> findAllLoan() {
-        return List.of();
+        List<LibraryLoan> loans = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`library_loan`;");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Book book = Book.builder().id(rs.getInt("id_book")).build();
+                User user = User.builder().id(rs.getInt("id_user")).build();
+                loans.add(LibraryLoan.builder().id(rs.getInt("id_loan"))
+                        .book(book)
+                        .user(user)
+                        .status(rs.getString("status"))
+                        .loanDate(rs.getDate("loan_date").toLocalDate())
+                        .dueDate(rs.getDate("due_date").toLocalDate())
+                        .returnDate(rs.getDate("return_date").toLocalDate())
+                        .build());
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to find all loans");
+        }
+        return loans;
     }
 
     @Override
