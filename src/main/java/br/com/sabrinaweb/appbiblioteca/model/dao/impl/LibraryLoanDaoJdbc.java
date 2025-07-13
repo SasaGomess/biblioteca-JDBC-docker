@@ -13,7 +13,7 @@ import java.util.*;
 @Log4j2
 public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
-    private Connection conn;
+    private final Connection conn;
 
     public LibraryLoanDaoJdbc(Connection conn) {
         this.conn = conn;

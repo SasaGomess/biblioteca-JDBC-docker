@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Log4j2
 public class UserDaoJdbc implements UserDao {
-    private Connection conn;
+    private final Connection conn;
 
     public UserDaoJdbc(Connection conn) {
         this.conn = conn;

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Log4j2
 public class AuthorDaoJdbc implements AuthorDao {
-    private Connection conn;
+    private final Connection conn;
 
     public AuthorDaoJdbc(Connection conn) {
         this.conn = conn;
@@ -41,7 +41,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public void update(Author author) {
-        try (PreparedStatement ps = conn.prepareStatement("UPDATE `library`.`author` SET name = ?, birthdate = ?, nationality = ? WHERE id_autor = ?")) {
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE `library`.`author` SET name = ?, birthdate = ?, nationality = ? WHERE id_author = ?")) {
             ps.setString(1, author.getName());
             ps.setDate(2, Date.valueOf(author.getBirthdate()));
             ps.setString(3, author.getNationality());
@@ -62,7 +62,7 @@ public class AuthorDaoJdbc implements AuthorDao {
             while (rs.next()) {
                 autors.add(Author.builder()
                         .name(rs.getString("name"))
-                        .id(rs.getInt("id_autor"))
+                        .id(rs.getInt("id_author"))
                         .birthdate(rs.getDate("birthdate").toLocalDate())
                         .nationality(rs.getString("nationality"))
                         .build());
@@ -82,7 +82,7 @@ public class AuthorDaoJdbc implements AuthorDao {
             while (rs.next()) {
                 autors.add(Author.builder()
                         .name(rs.getString("name"))
-                        .id(rs.getInt("id_autor"))
+                        .id(rs.getInt("id_author"))
                         .birthdate(rs.getDate("birthdate").toLocalDate())
                         .nationality(rs.getString("nationality"))
                         .build());
@@ -100,7 +100,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 
             if (rs.next()) {
                 return Optional.of(Author.builder()
-                        .id(rs.getInt("id_autor"))
+                        .id(rs.getInt("id_author"))
                         .name(rs.getString("name"))
                         .birthdate(rs.getDate("birthdate").toLocalDate())
                         .nationality(rs.getString("nationality"))
@@ -121,7 +121,7 @@ public class AuthorDaoJdbc implements AuthorDao {
             while (rs.next()){
                 autors.add(Author.builder()
                         .name(rs.getString("name"))
-                        .id(rs.getInt("id_autor"))
+                        .id(rs.getInt("id_author"))
                         .birthdate(rs.getDate("birthdate").toLocalDate())
                         .nationality(rs.getString("nationality"))
                         .build());
@@ -144,7 +144,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
     private PreparedStatement findAuthorByBookIdPreparedStatement(Integer idBook) throws SQLException {
         String sql = "SELECT au.* from library.author AS au" +
-                "INNER JOIN library.book_autor AS ba ON au.id_author = ba.id_autor" +
+                "INNER JOIN library.book_author AS ba ON au.id_author = ba.id_author" +
                 "INNER JOIN library.book AS bo ON ba.id_book = bo.id_book WHERE ba.id_book = ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, idBook);

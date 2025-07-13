@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Log4j2
 public class BookDaoJdbc implements BookDao {
-    private Connection conn;
+    private final Connection conn;
 
     public BookDaoJdbc(Connection conn) {
         this.conn = conn;
@@ -153,9 +153,9 @@ public class BookDaoJdbc implements BookDao {
         return Optional.empty();
     }
     @Override
-    public List<Book> findAllBooksOfAAutor(Integer idAutor) {
+    public List<Book> findAllBooksOfAAutor(Integer idAuthor) {
         List<Book> books = new ArrayList<>();
-        try (PreparedStatement ps = findBookByAutorIdPreparedStatement(idAutor);
+        try (PreparedStatement ps = findBookByAutorIdPreparedStatement(idAuthor);
              ResultSet rs = ps.executeQuery()){
             while (rs.next()){
                 books.add(Book.builder()
@@ -170,16 +170,16 @@ public class BookDaoJdbc implements BookDao {
             }
 
         }catch (SQLException e){
-            log.error("Error trying to find the books of the autor '{}'", idAutor);
+            log.error("Error trying to find the books of the author '{}'", idAuthor);
         }
         return books;
     }
-    private PreparedStatement findBookByAutorIdPreparedStatement(Integer idAutor) throws SQLException{
-        String sql = "SELECT bo.* from library.autor AS au " +
-                "INNER JOIN library.book_autor AS ba ON au.id_autor = ba.id_autor" +
-                "INNER JOIN library.book AS bo ON ba.id_book = bo.id_book WHERE ba.id_autor = ?;";
+    private PreparedStatement findBookByAutorIdPreparedStatement(Integer idAuthor) throws SQLException{
+        String sql = "SELECT bo.* from library.author AS au " +
+                "INNER JOIN library.book_author AS ba ON au.id_author = ba.id_author" +
+                "INNER JOIN library.book AS bo ON ba.id_book = bo.id_book WHERE ba.id_author = ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setInt(1, idAutor);
+        ps.setInt(1, idAuthor);
         return ps;
     }
 
