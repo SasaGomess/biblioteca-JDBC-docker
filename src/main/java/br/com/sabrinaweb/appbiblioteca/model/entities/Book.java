@@ -13,4 +13,5 @@ public class Book {
     private String publisher;
     private String genre;
     private int numberPages;
+    private String status;
 }
