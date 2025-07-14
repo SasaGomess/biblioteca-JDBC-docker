@@ -20,21 +20,32 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     }
 
     @Override
-    public void insert(LibraryLoan libraryLoan) {
-        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO `library`.`library_loan` (id_book, id_user, status, loan_date, due_date) VALUES (?, ?, ?, ?, ?)")) {
-            conn.setAutoCommit(false);
-            ps.setInt(1, libraryLoan.getBook().getId());
-            ps.setInt(2, libraryLoan.getUser().getId());
-            ps.setString(3, libraryLoan.getStatus());
-            ps.setDate(4, Date.valueOf(libraryLoan.getLoanDate()));
-            ps.setDate(5, Date.valueOf(libraryLoan.getDueDate()));
+    public void insert(LibraryLoan libraryLoan) throws SQLException {
+        conn.setAutoCommit(false);
+        try {
+            PreparedStatement psInsert = conn.prepareStatement("INSERT INTO `library`.`library_loan` (id_book, id_user, status, loan_date, due_date) VALUES (?, ?, ?, ?, ?)");
 
-            ps.execute();
+            psInsert.setInt(1, libraryLoan.getBook().getId());
+            psInsert.setInt(2, libraryLoan.getUser().getId());
+            psInsert.setString(3, libraryLoan.getStatus());
+            psInsert.setDate(4, Date.valueOf(libraryLoan.getLoanDate()));
+            psInsert.setDate(5, Date.valueOf(libraryLoan.getDueDate()));
+
+            PreparedStatement psUpdateStatus = conn.prepareStatement("UPDATE `library`.`book` SET status = ? WHERE id_book = ? AND status = 'disponível';");
+
+            psUpdateStatus.setString(1, libraryLoan.getBook().getStatus());
+            psUpdateStatus.setInt(2, libraryLoan.getBook().getId());
+
+            psInsert.execute();
+            psUpdateStatus.execute();
+
             conn.commit();
-            conn.setAutoCommit(true);
+            log.info("The loan was inserted with success");
         } catch (SQLException e) {
+            conn.rollback();
             log.error("Error trying to register the new loan");
         }
+        conn.setAutoCommit(true);
     }
 
     @Override
@@ -94,13 +105,14 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
         } catch (SQLException e) {
             log.error("Error trying to verify if the book '{}' is available for loan", idBook);
         }
-        return value;    }
+        return value;
+    }
 
     @Override
     public Optional<LibraryLoan> findById(Integer id) {
         try (PreparedStatement ps = findByIdPreparedStatement(id);
-             ResultSet rs = ps.executeQuery()){
-            if (rs.next()){
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
                 Book book = Book.builder().id(rs.getInt("id_book")).build();
                 User user = User.builder().id(rs.getInt("id_user")).build();
                 return Optional.of(LibraryLoan.builder()
@@ -113,7 +125,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
                         .returnDate(rs.getDate("return_date").toLocalDate())
                         .build());
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Error trying to find the loan by id '{}'", id);
         }
         return Optional.empty();
@@ -146,39 +158,23 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     }
 
     @Override
-    public Map<Integer, User> findUsersWithMoreThanOneBookBorrowed() {
-        Map<Integer, User> usersWithMoreThanOneBooks = new HashMap<>();
+    public Map<List<Integer>, User> findUsersWithMoreThanOneBookBorrowed() {
 
-        try (PreparedStatement ps = conn.prepareStatement("SELECT ll.id_loan, us.* FROM `library`.`user` AS us INNER JOIN `library`.`library_loan` AS ll ON us.id_user = ll.id_user GROUP BY ll.id_user HAVING COUNT(id_user) > 1");
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                Integer idLoan = LibraryLoan.builder().id(rs.getInt("id_loan")).build().getId();
-                User user = User.builder()
-                        .name(rs.getString("name"))
-                        .id(rs.getInt("id_user"))
-                        .email(rs.getString("email"))
-                        .phone(rs.getNString("phone"))
-                        .address(rs.getString("address"))
-                        .build();
-                usersWithMoreThanOneBooks.put(idLoan, user);
-            }
-        } catch (SQLException e) {
-            log.error("Error trying to find the user with more than one book borrowed");
-        }
         return usersWithMoreThanOneBooks;
     }
 
     private PreparedStatement bookAvailablePreparedStatement(Integer idBook) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS isNotAvailable FROM `library`.`library_loan` WHERE id_book = ? AND return_date IS NULL;");
+        PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) AS isNotAvailable FROM `library`.`library_loan` AS ll inner join `library`.`book` AS bo ON ll.id_book = bo.id_book WHERE ll.id_book = ? and ll.return_date IS NULL AND bo.status = 'indisponível';");
         ps.setInt(1, idBook);
         return ps;
     }
-    private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException{
+
+    private PreparedStatement findByIdPreparedStatement(Integer id) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`library_loan` WHERE id_loan = ?;");
         ps.setInt(1, id);
         return ps;
     }
+
     private PreparedStatement findBooksBorrowedByStatusPreparedStatement(String status) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT bo.*, ll.id_loan FROM library.book AS bo INNER JOIN library.library_loan AS ll ON ll.id_book = bo.id_book WHERE status LIKE ?");
         ps.setString(1, String.format("%%%s%%", status));
