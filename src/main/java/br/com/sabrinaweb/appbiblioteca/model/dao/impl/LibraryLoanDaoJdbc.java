@@ -202,8 +202,9 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     }
 
     private PreparedStatement findBooksBorrowedByStatusPreparedStatement(String status) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement("SELECT bo.*, ll.id_loan FROM library.book AS bo INNER JOIN library.library_loan AS ll ON ll.id_book = bo.id_book WHERE status LIKE ?");
-        ps.setString(1, String.format("%%%s%%", status));
+        PreparedStatement ps = conn.prepareStatement("SELECT bo.*, ll.id_loan FROM library.book AS bo INNER JOIN library.library_loan AS ll ON ll.id_book = bo.id_book WHERE ll.status LIKE ? OR bo.status LIKE ?");
+        ps.setString(1, String.format("%s%%", status));
+        ps.setString(2, String.format("%s%%", status));
         ps.execute();
         return ps;
     }

@@ -14,6 +14,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class LibraryLoanService {
@@ -75,15 +77,15 @@ public class LibraryLoanService {
     }
 
     public void findBooksBorrowedByStatus() {
-        System.out.println("Enter the status of the book that you want to find");
+        System.out.println("Enter the status of the book or the loan that you want to find");
         String status = SCANNER.nextLine();
         Map<Integer, Book> booksBorrowedByStatus = libraryLoanDao.findBooksBorrowedByStatus(status);
 
-        booksBorrowedByStatus.forEach((id, book) -> System.out.printf("ID[%d] %s - %s - %s - %s %n", id, book.getTitle(), book.getGenre(), book.getPublisher(), book.getIsbn()));
+        booksBorrowedByStatus.forEach((id, book) -> System.out.printf("ID_Loan[%d] Book - %d - %s - %s - %s - %s %n", id, book.getId(), book.getTitle(), book.getGenre(), book.getPublisher(), book.getIsbn()));
     }
 
     public void findUsersWithMoreThanOneBookBorrowed() {
-        log.info("Users found: ");
-        libraryLoanDao.findUsersWithMoreThanOneBookBorrowed().forEach((id, user) -> System.out.printf("ID[%d] %s - %s - %s - %s %n", id, user.getName(), user.getEmail(), user.getPhone(), user.getAddress()));
+        log.info("User(s) with more than one book borrowed found: ");
+        libraryLoanDao.findUsersWithMoreThanOneBookBorrowed().forEach((ids, user) -> System.out.println("ID of loans: " +ids + ": user: ID["+ user.getId() + "], " + user.getName() + ", " + user.getPhone() + ", " + user.getEmail() + ", " + user.getAddress()));
     }
 }
