@@ -160,6 +160,32 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     @Override
     public Map<List<Integer>, User> findUsersWithMoreThanOneBookBorrowed() {
 
+        Map<List<Integer>, User> usersWithMoreThanOneBooks = new HashMap<>();
+        List<Integer> idsLoan = new ArrayList<>();
+        try (PreparedStatement psUser = conn.prepareStatement("SELECT us.* FROM `library`.`user` AS us INNER JOIN `library`.`library_loan` AS ll ON us.id_user = ll.id_user GROUP BY ll.id_user HAVING COUNT(ll.id_user) > 1;");
+             ResultSet rsUser = psUser.executeQuery()) {
+
+            PreparedStatement psIdLoan = conn.prepareStatement("SELECT id_loan FROM `library`.`library_loan` WHERE id_user = ?;");
+
+            while (rsUser.next()) {
+                User user = User.builder()
+                        .name(rsUser.getString("us.name"))
+                        .id(rsUser.getInt("us.id_user"))
+                        .email(rsUser.getString("us.email"))
+                        .phone(rsUser.getNString("us.phone"))
+                        .address(rsUser.getString("us.address"))
+                        .build();
+
+                psIdLoan.setInt(1, user.getId());
+                ResultSet rsIdLoan = psIdLoan.executeQuery();
+                while (rsIdLoan.next()){
+                    idsLoan.add(rsIdLoan.getInt("id_loan"));
+                }
+                usersWithMoreThanOneBooks.put(idsLoan, user);
+            }
+        } catch (SQLException e) {
+            log.error("Error trying to find the user with more than one book borrowed");
+        }
         return usersWithMoreThanOneBooks;
     }
 
