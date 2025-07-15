@@ -33,6 +33,7 @@ public class UserDaoJdbc implements UserDao {
             ps.setString(4, user.getAddress());
 
             ps.execute();
+            log.info("The user was registered with success!");
         } catch (SQLException e) {
             log.error("Error trying to insert the user");
 
@@ -49,6 +50,7 @@ public class UserDaoJdbc implements UserDao {
             ps.setInt(5, user.getId());
 
             ps.execute();
+            log.info("The user was updated with success");
         }catch (SQLException e){
             log.error("Error trying to update the user '{}' with the id '{}'", user.getName(), user.getId());
         }
@@ -57,9 +59,10 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public void deleteById(Integer id) {
 
-        try (PreparedStatement st = conn.prepareStatement("DELETE FROM library.user WHERE (id_user = ?);")) {
+        try (PreparedStatement st = conn.prepareStatement("DELETE FROM `library`.`user` WHERE (id_user = ?);")) {
             st.setInt(1, id);
             st.execute();
+            log.info("The user was deleted with success");
         } catch (SQLException e) {
             log.error("Error trying to delete User by id '{}'", id);
         }

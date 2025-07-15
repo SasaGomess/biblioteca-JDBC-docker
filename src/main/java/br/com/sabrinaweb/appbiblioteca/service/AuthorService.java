@@ -27,12 +27,11 @@ public class AuthorService {
 
         Author author = Author.builder().name(name).nationality(nationality).birthdate(LocalDate.parse(birthDate, fmt)).build();
         authorDao.insert(author);
-        log.info("The author was registered with success!");
     }
 
     public void delete() {
         try{
-            authorDao.findAllAutors().forEach(a -> System.out.printf("ID:[%d] - %s, %s, %s %n", a.getId(), a.getName(), a.getNationality(), a.getBirthdate()));
+            authorDao.findAllAuthors().forEach(a -> System.out.printf("ID:[%d] - %s, %s, %s %n", a.getId(), a.getName(), a.getNationality(), a.getBirthdate()));
 
             System.out.println("Enter the author id to delete");
             Integer id = Integer.parseInt(SCANNER.nextLine());
@@ -43,7 +42,6 @@ public class AuthorService {
             System.out.print("RESP: ");
             String resp = SCANNER.nextLine();
             if (resp.equalsIgnoreCase("y")) authorDao.deleteById(id);
-            log.info("The author was deleted with success!");
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
@@ -73,7 +71,6 @@ public class AuthorService {
                     .birthdate(LocalDate.parse(birthDate, fmt))
                     .build();
             authorDao.update(userToUpdate);
-            log.info("The author was updated with success");
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
@@ -83,19 +80,18 @@ public class AuthorService {
         System.out.println("Enter the author name to found");
         String name = SCANNER.nextLine();
         List<Author> userByName = authorDao.findByName(name);
-        log.info("Author found '{}'", userByName);
+        log.info("Author(s) found '{}'", userByName);
     }
 
     public void findAuthorByWroteBook() {
         try {
-            System.out.print("Enter the book id to find it's author (s): ");
+            System.out.print("Enter the book id to find its author(s): ");
             int id = Integer.parseInt(SCANNER.nextLine());
             if (id < 0) throw new InvalidIdException("The id is null or equal 0, you should enter a valid id");
-            List<Author> allBooksOfAAuthor = authorDao.findAutorByWroteBook(id);
-            log.info("Books found '{}'", allBooksOfAAuthor);
+            List<Author> authorsOfABook = authorDao.findAuthorByWroteBook(id);
+            log.info("Author(s) found '{}'", authorsOfABook);
         }catch (NumberFormatException e){
             System.out.println(e.getMessage());
         }
-
     }
 }

@@ -31,6 +31,7 @@ public class BookDaoJdbc implements BookDao {
             ps.setInt(5, book.getNumberPages());
             ps.setDate(6, new Date(book.getYear_public()));
             ps.execute();
+            log.info("The book was registered with success!");
         } catch (SQLException e) {
             log.error("Error trying to insert the book '{}'", book.getTitle());
         }
@@ -45,6 +46,7 @@ public class BookDaoJdbc implements BookDao {
             ps.setInt(4, book.getId());
 
             ps.execute();
+            log.info("The book was updated with success!");
         } catch (SQLException e) {
             log.error("Error trying to update the book '{}'", book.getTitle());
         }
@@ -54,6 +56,8 @@ public class BookDaoJdbc implements BookDao {
     public void deleteById(Integer idBook) {
         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM library.book WHERE (id_book = ?)")) {
             ps.setInt(1, idBook);
+            ps.execute();
+            log.info("The book was deleted with success");
         } catch (SQLException e) {
             log.error("Error trying to delete book with the id '{}'", idBook);
         }
@@ -113,8 +117,6 @@ public class BookDaoJdbc implements BookDao {
         List<Book> books = new ArrayList<>();
         try (PreparedStatement st = conn.prepareStatement("SELECT * FROM library.book WHERE status = 'disponível';");
              ResultSet rs = st.executeQuery()) {
-
-            if (!rs.next()) return books;
 
             while (rs.next()) {
                 books.add(Book.builder()

@@ -4,9 +4,11 @@ import br.com.sabrinaweb.appbiblioteca.service.AuthorService;
 import br.com.sabrinaweb.appbiblioteca.service.BookService;
 import br.com.sabrinaweb.appbiblioteca.service.LibraryLoanService;
 import br.com.sabrinaweb.appbiblioteca.service.UserService;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Scanner;
 
+@Log4j2
 public class MenuMain {
     private BookService bookService;
     private AuthorService authorService;
@@ -24,22 +26,26 @@ public class MenuMain {
     public MenuMain() {
     }
     public void menu(){
-        showMenuOptions();
-        int menuResp = Integer.parseInt(SCANNER.nextLine());
-        do {
-            switch (menuResp){
-                case 1 -> userMenu();
-                case 2 -> bookMenu();
-                case 3 -> loanMenu();
-                case 4 -> authorMenu();
-                case 0 -> System.out.println("Exiting...");
-                default -> throw new IllegalArgumentException("Invalid option you must enter the available options :)");
-            }
-            if (menuResp != 0){
-                showMenuOptions();
-                menuResp = Integer.parseInt(SCANNER.nextLine());
-            }
-        }while (menuResp != 0);
+        try {
+            showMenuOptions();
+            int menuResp = Integer.parseInt(SCANNER.nextLine());
+            do {
+                switch (menuResp){
+                    case 1 -> userMenu();
+                    case 2 -> bookMenu();
+                    case 3 -> loanMenu();
+                    case 4 -> authorMenu();
+                    case 0 -> System.out.println("Exiting...");
+                    default -> throw new IllegalArgumentException("Invalid option you must enter the available options :)");
+                }
+                if (menuResp != 0){
+                    showMenuOptions();
+                    menuResp = Integer.parseInt(SCANNER.nextLine());
+                }
+            }while (menuResp != 0);
+        }catch (IllegalArgumentException e){
+            log.error(e);
+        }
     }
     public void showMenuOptions(){
         System.out.println("--+--Choose a operation--+--");
@@ -117,6 +123,8 @@ public class MenuMain {
         System.out.println("2 - Return a book");
         System.out.println("3 - Find the book in the loan service by its status or by the loan status");
         System.out.println("4 - Find the user(s) with more than one loan");
+        System.out.println("5 - Find all loans");
+        System.out.println("6 - Replace a book of a loan");
         System.out.println("9 - >> Return to the main menu");
 
         System.out.print("RESP: ");
@@ -126,6 +134,7 @@ public class MenuMain {
             case 2 -> libraryLoanService.returnBook();
             case 3 -> libraryLoanService.findBooksBorrowedByStatus();
             case 4 -> libraryLoanService.findUsersWithMoreThanOneBookBorrowed();
+            case 5 -> libraryLoanService.findAllLoan();
             case 9 -> System.out.println("Coming back to the principal menu...");
             default -> throw new IllegalArgumentException("Invalid option you must enter the available options :)");
         }

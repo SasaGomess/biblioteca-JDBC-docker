@@ -49,26 +49,26 @@ public class LibraryLoanService {
                     .dueDate(LocalDate.now().plusDays(15))
                     .build();
             libraryLoanDao.insert(libraryLoan);
-            log.info("The loan was registered with success!");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
         }catch (SQLException ex){
             log.error("Error with the connection");
         }
     }
-
+    public void findAllLoan() {
+        libraryLoanDao.findAllLoan().forEach(l -> System.out.println( "ID ["+ l.getId() + "] - book id:" + l.getBook().getId() + " - user id:" + l.getUser().getId() + " - " + l.getStatus() + " - loan date: " + l.getLoanDate() + " - due date: " + l.getDueDate() + " - return date: " + l.getReturnDate()));
+    }
     public void returnBook() {
         try {
-            libraryLoanDao.findAllLoan().forEach(l -> System.out.printf("ID: %d, id_book: %d id_user: %d %n", l.getId(), l.getBook().getId(), l.getUser().getId()));
+            libraryLoanDao.findAllLoan().forEach(l -> System.out.printf("ID: %d, id_book: %d id_user: %d %s %n", l.getId(), l.getBook().getId(), l.getUser().getId(), l.getStatus()));
             System.out.println("Enter the loan id you want to return");
             Integer id = Integer.parseInt(SCANNER.nextLine());
             LibraryLoan loanFoundById = libraryLoanDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
-            log.info("ID:[{}] - book_ID:{} - user_id:{} - {} - {} - {}", loanFoundById.getId(), loanFoundById.getBook().getId(), loanFoundById.getUser().getId(), loanFoundById.getStatus(), loanFoundById.getDueDate(), loanFoundById.getLoanDate());
 
             if (loanFoundById.getStatus().equalsIgnoreCase("devolvido")) {
                 throw new InvalidLoanException("The book is already returned");
             }
-
+            log.info("ID:[{}] - book_ID:{} - user_id:{} - {} - {} - {}", loanFoundById.getId(), loanFoundById.getBook().getId(), loanFoundById.getUser().getId(), loanFoundById.getStatus(), loanFoundById.getDueDate(), loanFoundById.getLoanDate());
             LibraryLoan libraryLoanToReturn = LibraryLoan.builder()
                     .id(loanFoundById.getId())
                     .book(loanFoundById.getBook())
@@ -80,7 +80,6 @@ public class LibraryLoanService {
             libraryLoanToReturn.getBook().setStatus("disponível");
 
             libraryLoanDao.update(libraryLoanToReturn);
-            log.info("The return happen with success!");
         } catch (NumberFormatException | InvalidLoanException e) {
             log.error(e.getMessage());
         }catch (SQLException ex){

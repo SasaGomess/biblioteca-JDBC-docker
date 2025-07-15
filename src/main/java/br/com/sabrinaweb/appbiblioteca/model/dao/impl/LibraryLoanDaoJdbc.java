@@ -40,7 +40,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
             psUpdateStatus.execute();
 
             conn.commit();
-            log.info("The loan was inserted with success!");
+            log.info("The loan was registered with success!");
         } catch (SQLException e) {
             conn.rollback();
             log.error("Error trying to register the new loan");
@@ -51,7 +51,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     @Override
     public void update(LibraryLoan libraryLoan) throws SQLException {
         conn.setAutoCommit(false);
-        try (PreparedStatement psLoan = conn.prepareStatement("UPDATE `library`.`library_loan` SET status = ? returnDate = ? WHERE id_loan = ? ")) {
+        try (PreparedStatement psLoan = conn.prepareStatement("UPDATE `library`.`library_loan` SET status = ?, return_date = ? WHERE id_loan = ? ")) {
             psLoan.setString(1, libraryLoan.getStatus());
             psLoan.setDate(2, Date.valueOf(libraryLoan.getReturnDate()));
             psLoan.setInt(3, libraryLoan.getId());
@@ -64,7 +64,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
             psBookStatus.execute();
 
             conn.commit();
-            log.info("The loan was updated with success!");
+            log.info("The return/update was successful!");
         } catch (SQLException e) {
             conn.rollback();
             log.error("Error trying to update the loan service");
@@ -90,14 +90,18 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
             while (rs.next()) {
                 Book book = Book.builder().id(rs.getInt("id_book")).build();
                 User user = User.builder().id(rs.getInt("id_user")).build();
-                loans.add(LibraryLoan.builder().id(rs.getInt("id_loan"))
+
+                LibraryLoan loan = LibraryLoan.builder().id(rs.getInt("id_loan"))
                         .book(book)
                         .user(user)
                         .status(rs.getString("status"))
                         .loanDate(rs.getDate("loan_date").toLocalDate())
                         .dueDate(rs.getDate("due_date").toLocalDate())
-                        .returnDate(rs.getDate("return_date").toLocalDate())
-                        .build());
+                        .build();
+
+                if(rs.getDate("return_date") != null) loan.setReturnDate(rs.getDate("return_date").toLocalDate());
+
+                loans.add(loan);
             }
         } catch (SQLException e) {
             log.error("Error trying to find all loans");
@@ -133,7 +137,6 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
                         .status(rs.getString("status"))
                         .loanDate(rs.getDate("loan_date").toLocalDate())
                         .dueDate(rs.getDate("due_date").toLocalDate())
-                        .returnDate(rs.getDate("return_date").toLocalDate())
                         .build());
             }
         } catch (SQLException e) {

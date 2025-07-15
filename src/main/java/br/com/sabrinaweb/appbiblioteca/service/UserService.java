@@ -27,7 +27,6 @@ public class UserService {
         String address = SCANNER.nextLine();
         User user = User.builder().name(name).email(email).phone(phone).address(address).build();
         userDao.insert(user);
-        log.info("The user was registered with success!");
     }
 
     public void delete() {
@@ -42,7 +41,6 @@ public class UserService {
             System.out.printf("Are you sure that you want to delete the user: %d [Y/N]%n", id);
             String resp = SCANNER.nextLine();
             if (resp.equalsIgnoreCase("y")) userDao.deleteById(id);
-            log.info("The user was deleted with success");
         } catch (NumberFormatException | UserNotFoundException e) {
             log.error(e.getMessage());
         }
@@ -77,7 +75,6 @@ public class UserService {
                     .phone(phone)
                     .build();
             userDao.update(userToUpdate);
-            log.info("The user was updated with success");
         } catch (NumberFormatException | UserNotFoundException e) {
             log.error(e.getMessage());
         }

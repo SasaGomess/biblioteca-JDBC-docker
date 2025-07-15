@@ -25,6 +25,7 @@ public class AuthorDaoJdbc implements AuthorDao {
             ps.setString(3, author.getNationality());
 
             ps.execute();
+            log.info("The author was registered with success!");
         } catch (SQLException e) {
             log.error("Error trying to insert the author '{}'", author.getName());
         }
@@ -34,6 +35,8 @@ public class AuthorDaoJdbc implements AuthorDao {
     public void deleteById(Integer id) {
         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM `library`.`author` WHERE (id_author = ?)")) {
             ps.setInt(1, id);
+            ps.execute();
+            log.info("The author was deleted with success!");
         } catch (SQLException e) {
             log.error("Error trying to delete the author by id '{}'", id);
         }
@@ -48,19 +51,20 @@ public class AuthorDaoJdbc implements AuthorDao {
             ps.setInt(4, author.getId());
 
             ps.execute();
+            log.info("The author was updated with success");
         } catch (SQLException e) {
             log.error("Error trying to update the author '{}', where the id is '{}'", author.getName(), author.getId());
         }
     }
 
     @Override
-    public List<Author> findAllAutors() {
-        List<Author> autors = new ArrayList<>();
+    public List<Author> findAllAuthors() {
+        List<Author> authors = new ArrayList<>();
 
         try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`author`;");
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                autors.add(Author.builder()
+                authors.add(Author.builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id_author"))
                         .birthdate(rs.getDate("birthdate").toLocalDate())
@@ -70,17 +74,17 @@ public class AuthorDaoJdbc implements AuthorDao {
         } catch (SQLException e) {
             log.error("Error trying to find all authors");
         }
-        return autors;
+        return authors;
     }
 
     @Override
     public List<Author> findByName(String name) {
-        List<Author> autors = new ArrayList<>();
+        List<Author> authors = new ArrayList<>();
         try (PreparedStatement ps = findByNamePreparedStatement(name);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                autors.add(Author.builder()
+                authors.add(Author.builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id_author"))
                         .birthdate(rs.getDate("birthdate").toLocalDate())
@@ -90,7 +94,7 @@ public class AuthorDaoJdbc implements AuthorDao {
         } catch (SQLException e) {
             log.error("Error trying to find author by name '{}'", name);
         }
-        return autors;
+        return authors;
     }
 
     @Override
@@ -113,13 +117,13 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public List<Author> findAutorByWroteBook(Integer idBook) {
-        List<Author> autors = new ArrayList<>();
+    public List<Author> findAuthorByWroteBook(Integer idBook) {
+        List<Author> authors = new ArrayList<>();
         try (PreparedStatement ps = findAuthorByBookIdPreparedStatement(idBook);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()){
-                autors.add(Author.builder()
+                authors.add(Author.builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id_author"))
                         .birthdate(rs.getDate("birthdate").toLocalDate())
@@ -130,7 +134,7 @@ public class AuthorDaoJdbc implements AuthorDao {
         } catch (SQLException e) {
             log.error("Error trying to find the author(s) of the book '{}'", idBook);
         }
-        return autors;
+        return authors;
     }
     private PreparedStatement findByNamePreparedStatement(String name) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`author` WHERE name LIKE ?;");
@@ -143,8 +147,8 @@ public class AuthorDaoJdbc implements AuthorDao {
         return ps;
     }
     private PreparedStatement findAuthorByBookIdPreparedStatement(Integer idBook) throws SQLException {
-        String sql = "SELECT au.* from library.author AS au" +
-                "INNER JOIN library.book_author AS ba ON au.id_author = ba.id_author" +
+        String sql = "SELECT au.* from library.author AS au " +
+                "INNER JOIN library.book_author AS ba ON au.id_author = ba.id_author " +
                 "INNER JOIN library.book AS bo ON ba.id_book = bo.id_book WHERE ba.id_book = ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, idBook);

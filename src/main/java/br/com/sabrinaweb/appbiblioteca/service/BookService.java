@@ -30,7 +30,6 @@ public class BookService {
         int numberOfPages = Integer.parseInt(SCANNER.nextLine());
         Book book = Book.builder().title(title).publisher(publisher).genre(genre).isbn(isbn).year_public(yearOfPublication).numberPages(numberOfPages).build();
         bookDao.insert(book);
-        log.info("The book was registered with success!");
     }
     public void delete(){
         try {
@@ -44,7 +43,6 @@ public class BookService {
             System.out.printf("Are you sure that you want to delete the book: '%d' [Y/N] %n", id);
             String resp = SCANNER.nextLine();
             if (resp.equalsIgnoreCase("y")) bookDao.deleteById(id);
-            log.info("The book was deleted with success");
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
@@ -74,7 +72,6 @@ public class BookService {
                     .year_public(yearOfPublication)
                     .build();
             bookDao.update(bookToUpdate);
-            log.info("The book was updated with success!");
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
@@ -102,7 +99,7 @@ public class BookService {
             if (idAuthor < 0) throw new InvalidIdException("The id is null or equal 0, you should enter a valid id");
 
             List<Book> allBooksOfAAuthor = bookDao.findAllBooksOfAAuthor(idAuthor);
-            log.info("Books found '{}'", allBooksOfAAuthor);
+            log.info("Book(s) found '{}'", allBooksOfAAuthor);
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
