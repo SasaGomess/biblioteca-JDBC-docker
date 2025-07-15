@@ -99,7 +99,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
                         .dueDate(rs.getDate("due_date").toLocalDate())
                         .build();
 
-                if(rs.getDate("return_date") != null) loan.setReturnDate(rs.getDate("return_date").toLocalDate());
+                if (rs.getDate("return_date") != null) loan.setReturnDate(rs.getDate("return_date").toLocalDate());
 
                 loans.add(loan);
             }
@@ -193,7 +193,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
 
                 psIdLoan.setInt(1, user.getId());
                 ResultSet rsIdLoan = psIdLoan.executeQuery();
-                while (rsIdLoan.next()){
+                while (rsIdLoan.next()) {
                     idsLoan.add(rsIdLoan.getInt("id_loan"));
                 }
                 usersWithMoreThanOneBooks.put(idsLoan, user);
@@ -202,6 +202,29 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
             log.error("Error trying to find the user with more than one book borrowed");
         }
         return usersWithMoreThanOneBooks;
+    }
+    @Override
+    public Optional<Book> bookMoreBorrowed() {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT bo.*, COUNT(ll.id_book) AS book_more_borrowed FROM library.book AS bo INNER JOIN library.library_loan AS ll ON ll.id_book = bo.id_book GROUP BY ll.id_book ORDER BY book_more_borrowed DESC LIMIT 1;");
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return Optional.of(Book.builder()
+                        .id(rs.getInt("id_book"))
+                        .title(rs.getString("title"))
+                        .genre(rs.getString("genre"))
+                        .status(rs.getString("status"))
+                        .year_public(rs.getInt("year_public"))
+                        .isbn(rs.getString("isbn"))
+                        .publisher(rs.getString("publisher"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .build());
+            }
+
+        } catch (SQLException e) {
+            log.error("Error while trying to found the book more borrowed");
+        }
+        return Optional.empty();
     }
 
     private PreparedStatement bookAvailablePreparedStatement(Integer idBook) throws SQLException {

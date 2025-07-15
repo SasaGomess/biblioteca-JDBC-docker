@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -97,5 +98,10 @@ public class LibraryLoanService {
     public void findUsersWithMoreThanOneBookBorrowed() {
         log.info("User(s) with more than one book borrowed found: ");
         libraryLoanDao.findUsersWithMoreThanOneBookBorrowed().forEach((ids, user) -> System.out.println("ID of loans: " +ids + ": user: ID["+ user.getId() + "], " + user.getName() + ", " + user.getPhone() + ", " + user.getEmail() + ", " + user.getAddress()));
+    }
+
+    public void bookMoreBorrowed(){
+        log.info("Book more borrowed: ");
+        libraryLoanDao.bookMoreBorrowed().ifPresent(System.out::println);
     }
 }

@@ -53,6 +53,7 @@ public class MenuMain {
         System.out.println("2 - Book");
         System.out.println("3 - Loan Service");
         System.out.println("4 - Author");
+        System.out.println("5 - Generate reports");
         System.out.println("0 - >> EXIT");
         System.out.print("RESP: ");
     }
@@ -124,7 +125,6 @@ public class MenuMain {
         System.out.println("3 - Find the book in the loan service by its status or by the loan status");
         System.out.println("4 - Find the user(s) with more than one loan");
         System.out.println("5 - Find all loans");
-        System.out.println("6 - Replace a book of a loan");
         System.out.println("9 - >> Return to the main menu");
 
         System.out.print("RESP: ");
@@ -137,6 +137,25 @@ public class MenuMain {
             case 5 -> libraryLoanService.findAllLoan();
             case 9 -> System.out.println("Coming back to the principal menu...");
             default -> throw new IllegalArgumentException("Invalid option you must enter the available options :)");
+        }
+    }
+    public void reportMenu(){
+        System.out.println("1 - Book more borrowed");
+        System.out.println("2 - Users with more loan");
+        System.out.println("3 - Books borrowed in the moment");
+        System.out.println("4 - Show 5 books");
+        System.out.println("9 - >> Return to the main menu");
+
+        System.out.print("RESP: ");
+        int resp = Integer.parseInt(SCANNER.nextLine());
+
+        switch (resp){
+            case 1 -> libraryLoanService.bookMoreBorrowed();
+//            case 2 ->
+//            case 3 ->
+//            case 4 ->
+//            case 9 ->
+//            default ->
         }
     }
 }

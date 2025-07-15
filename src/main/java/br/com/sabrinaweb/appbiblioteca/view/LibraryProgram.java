@@ -1,6 +1,5 @@
 package br.com.sabrinaweb.appbiblioteca.view;
 
-import br.com.sabrinaweb.appbiblioteca.model.entities.Book;
 import br.com.sabrinaweb.appbiblioteca.service.AuthorService;
 import br.com.sabrinaweb.appbiblioteca.service.BookService;
 import br.com.sabrinaweb.appbiblioteca.service.LibraryLoanService;
