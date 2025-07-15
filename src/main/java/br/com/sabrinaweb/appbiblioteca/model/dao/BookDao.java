@@ -12,6 +12,6 @@ public interface BookDao {
     List<Book> findAllBooks();
     List<Book> findByTitle(String name);
     List<Book> findAvailableBooks();
-    List<Book> findAllBooksOfAAutor(Integer id_autor);
+    List<Book> findAllBooksOfAAuthor(Integer id_autor);
     Optional<Book> findById(Integer id);
 }

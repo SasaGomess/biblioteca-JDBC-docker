@@ -30,39 +30,51 @@ public class AuthorService {
     }
 
     public void delete() {
-        authorDao.findAllAutors().forEach(a -> System.out.printf("ID:[%d] - %s, %s, %s %n", a.getId(), a.getName(), a.getNationality(), a.getBirthdate()));
+        try{
+            authorDao.findAllAutors().forEach(a -> System.out.printf("ID:[%d] - %s, %s, %s %n", a.getId(), a.getName(), a.getNationality(), a.getBirthdate()));
 
-        System.out.println("Enter the author id to delete");
-        Integer id = Integer.parseInt(SCANNER.nextLine());
-        System.out.printf("Are you sure that you want to delete the author: '%d' [Y/N] %n", id);
-        System.out.print("RESP: ");
-        String resp = SCANNER.nextLine();
-        if (resp.equalsIgnoreCase("y")) authorDao.deleteById(id);
+            System.out.println("Enter the author id to delete");
+            Integer id = Integer.parseInt(SCANNER.nextLine());
+
+            if (id < 0) throw new InvalidIdException("The id is null or equal 0, you should enter a valid id");
+
+            System.out.printf("Are you sure that you want to delete the author: '%d' [Y/N] %n", id);
+            System.out.print("RESP: ");
+            String resp = SCANNER.nextLine();
+            if (resp.equalsIgnoreCase("y")) authorDao.deleteById(id);
+        }catch (NumberFormatException e){
+            log.error(e.getMessage());
+        }
     }
 
     public void update() {
-        System.out.println("Enter the author id to find");
-        Integer id = Integer.parseInt(SCANNER.nextLine());
-        Author autorFoundById = authorDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
-        System.out.println("Enter the new author name or empty to keep the same");
-        String name = SCANNER.nextLine();
-        System.out.println("Enter the new author nationality or empty to keep the same: ");
-        String nationality = SCANNER.nextLine();
-        System.out.println("Enter the author birthdate: (yyyy-mm-dd) or empty to keep the same");
-        String birthDate = SCANNER.nextLine();
+        try {
+            System.out.println("Enter the author id to find");
+            Integer id = Integer.parseInt(SCANNER.nextLine());
+            Author authorFoundById = authorDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
+            System.out.printf("ID:[%d] - %s, %s, %s %n", authorFoundById.getId(), authorFoundById.getName(), authorFoundById.getNationality(), authorFoundById.getBirthdate());
+            System.out.println("Enter the new author name or empty to keep the same");
+            String name = SCANNER.nextLine();
+            System.out.println("Enter the new author nationality or empty to keep the same: ");
+            String nationality = SCANNER.nextLine();
+            System.out.println("Enter the author birthdate: (yyyy-mm-dd) or empty to keep the same");
+            String birthDate = SCANNER.nextLine();
 
-        name = name.isEmpty() ? autorFoundById.getName() : name;
-        nationality = name.isEmpty() ? autorFoundById.getNationality() : nationality;
-        birthDate = birthDate.isEmpty() ? autorFoundById.getBirthdate().toString() : birthDate;
+            name = name.isEmpty() ? authorFoundById.getName() : name;
+            nationality = name.isEmpty() ? authorFoundById.getNationality() : nationality;
+            birthDate = birthDate.isEmpty() ? authorFoundById.getBirthdate().toString() : birthDate;
 
-        Author userToUpdate = Author.builder()
-                .id(autorFoundById.getId())
-                .name(name)
-                .nationality(nationality)
-                .birthdate(LocalDate.parse(birthDate, fmt))
-                .build();
-        authorDao.update(userToUpdate);
-        log.info("The author was updated with sucess");
+            Author userToUpdate = Author.builder()
+                    .id(authorFoundById.getId())
+                    .name(name)
+                    .nationality(nationality)
+                    .birthdate(LocalDate.parse(birthDate, fmt))
+                    .build();
+            authorDao.update(userToUpdate);
+            log.info("The author was updated with success");
+        }catch (NumberFormatException e){
+            log.error(e.getMessage());
+        }
     }
 
     public void findByName() {
@@ -72,10 +84,17 @@ public class AuthorService {
         log.info("Author found '{}'", userByName);
     }
 
-    public void findAutorByWroteBook() {
-        System.out.print("Enter the book id to find it's author (s): ");
-        Integer id = Integer.parseInt(SCANNER.nextLine());
-        List<Author> allBooksOfAAutor = authorDao.findAutorByWroteBook(id);
-        log.info("Books found '{}'", allBooksOfAAutor);
+    public void findAuthorByWroteBook() {
+        try {
+            System.out.print("Enter the book id to find it's author (s): ");
+            int id = Integer.parseInt(SCANNER.nextLine());
+            if (id < 0) throw new InvalidIdException("The id is null or equal 0, you should enter a valid id");
+            List<Author> allBooksOfAAuthor = authorDao.findAutorByWroteBook(id);
+            log.info("Books found '{}'", allBooksOfAAuthor);
+
+        }catch (NumberFormatException e){
+            System.out.println(e.getMessage());
+        }
+
     }
 }

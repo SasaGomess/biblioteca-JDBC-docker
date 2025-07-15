@@ -144,6 +144,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
                         .title(rs.getString("title"))
                         .publisher(rs.getString("publisher"))
                         .year_public(rs.getInt("year_public"))
+                        .status(rs.getString("status"))
                         .numberPages(rs.getInt("number_pages"))
                         .id(rs.getInt("id_book"))
                         .genre(rs.getString("genre"))

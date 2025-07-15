@@ -158,7 +158,7 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public List<Book> findAllBooksOfAAutor(Integer idAuthor) {
+    public List<Book> findAllBooksOfAAuthor(Integer idAuthor) {
         List<Book> books = new ArrayList<>();
         try (PreparedStatement ps = findBookByAutorIdPreparedStatement(idAuthor);
              ResultSet rs = ps.executeQuery()) {

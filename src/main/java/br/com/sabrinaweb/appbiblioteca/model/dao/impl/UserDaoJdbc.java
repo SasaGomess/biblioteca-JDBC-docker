@@ -1,5 +1,6 @@
 package br.com.sabrinaweb.appbiblioteca.model.dao.impl;
 
+import br.com.sabrinaweb.appbiblioteca.model.exceptions.UserNotFoundException;
 import br.com.sabrinaweb.appbiblioteca.model.dao.UserDao;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import lombok.extern.log4j.Log4j2;
@@ -82,7 +83,7 @@ public class UserDaoJdbc implements UserDao {
                         .build());
             }
         } catch (SQLException e) {
-            log.error("Error while trying to find all users");
+            throw new UserNotFoundException("Error while trying to find all users");
         }
         return user;
     }
@@ -104,7 +105,7 @@ public class UserDaoJdbc implements UserDao {
             }
 
         }catch (SQLException e){
-            log.error("Error trying to find user by '{}' name", name);
+            throw new UserNotFoundException("Error trying to find user by name");
         }
         return users;
     }
@@ -125,7 +126,7 @@ public class UserDaoJdbc implements UserDao {
             }
 
         }catch (SQLException e){
-            log.error("Error trying to find user by the '{}' id", id, e);
+            throw new UserNotFoundException("Error trying to find user by the id");
         }
         return Optional.empty();
     }

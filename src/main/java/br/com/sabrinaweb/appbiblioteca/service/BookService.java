@@ -32,36 +32,48 @@ public class BookService {
         bookDao.insert(book);
     }
     public void delete(){
-        bookDao.findAllBooks().forEach(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
+        try {
+            bookDao.findAllBooks().forEach(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
 
-        System.out.println("Enter the book id to delete");
-        Integer id = Integer.parseInt(SCANNER.nextLine());
-        System.out.printf("Are you sure that you want to delete the book: '%d' [Y/N] %n", id);
-        String resp = SCANNER.nextLine();
-        if (resp.equalsIgnoreCase("y")) bookDao.deleteById(id);
+            System.out.println("Enter the book id to delete");
+            Integer id = Integer.parseInt(SCANNER.nextLine());
+
+            if (id < 0) throw new InvalidIdException("The id is null or equal 0, you should enter a valid id");
+
+            System.out.printf("Are you sure that you want to delete the book: '%d' [Y/N] %n", id);
+            String resp = SCANNER.nextLine();
+            if (resp.equalsIgnoreCase("y")) bookDao.deleteById(id);
+        }catch (NumberFormatException e){
+            log.error(e.getMessage());
+        }
     }
 
     public void update(){
-        System.out.println("Enter the book id to find");
-        Integer id = Integer.parseInt(SCANNER.nextLine());
-        Book bookFoundById = bookDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
-        System.out.print("Enter the new book title or empty to keep the same");
-        String title = SCANNER.nextLine();
-        System.out.print("Enter the new book publisher or empty to keep the same: ");
-        String publisher = SCANNER.nextLine();
-        System.out.print("Enter the new book year of publication: ");
-        Integer yearOfPublication = Integer.parseInt(SCANNER.nextLine());
+        try {
+            System.out.println("Enter the book id to find");
+            Integer id = Integer.parseInt(SCANNER.nextLine());
+            Book bookFoundById = bookDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
+            System.out.print("Enter the new book title or empty to keep the same");
+            String title = SCANNER.nextLine();
+            System.out.print("Enter the new book publisher or empty to keep the same: ");
+            String publisher = SCANNER.nextLine();
+            System.out.print("Enter the new book year of publication: ");
+            Integer yearOfPublication = Integer.parseInt(SCANNER.nextLine());
 
-        title = title.isEmpty() ? bookFoundById.getTitle() : title;
-        publisher = publisher.isEmpty() ? bookFoundById.getPublisher() : publisher;
+            title = title.isEmpty() ? bookFoundById.getTitle() : title;
+            publisher = publisher.isEmpty() ? bookFoundById.getPublisher() : publisher;
 
-        Book bookToUpdate = Book.builder()
-                .id(bookFoundById.getId())
-                .title(title)
-                .publisher(publisher)
-                .year_public(yearOfPublication)
-                .build();
-        bookDao.update(bookToUpdate);
+            Book bookToUpdate = Book.builder()
+                    .id(bookFoundById.getId())
+                    .title(title)
+                    .publisher(publisher)
+                    .year_public(yearOfPublication)
+                    .build();
+            bookDao.update(bookToUpdate);
+        }catch (NumberFormatException e){
+            log.error(e.getMessage());
+        }
+
     }
 
     public void findByTitle(){
@@ -70,14 +82,23 @@ public class BookService {
         List<Book> userByName = bookDao.findByTitle(title);
         log.info("Book found '{}'", userByName);
     }
+
     public void findAvailableBooks(){
         List<Book> availableBooks = bookDao.findAvailableBooks();
         log.info("The available books found: '{}'", availableBooks);
     }
+
     public void findBookOfAAutor(){
-        System.out.print("Enter the autor id to find their book: ");
-        Integer id = Integer.parseInt(SCANNER.nextLine());
-        List<Book> allBooksOfAAutor = bookDao.findAllBooksOfAAutor(id);
-        log.info("Books found '{}'", allBooksOfAAutor);
+        try {
+            System.out.print("Enter the author id to find their book: ");
+            int idAuthor = Integer.parseInt(SCANNER.nextLine());
+
+            if (idAuthor < 0) throw new InvalidIdException("The id is null or equal 0, you should enter a valid id");
+
+            List<Book> allBooksOfAAuthor = bookDao.findAllBooksOfAAuthor(idAuthor);
+            log.info("Books found '{}'", allBooksOfAAuthor);
+        }catch (NumberFormatException e){
+            log.error(e.getMessage());
+        }
     }
 }

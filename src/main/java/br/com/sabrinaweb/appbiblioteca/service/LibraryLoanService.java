@@ -7,6 +7,7 @@ import br.com.sabrinaweb.appbiblioteca.model.entities.LibraryLoan;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import br.com.sabrinaweb.appbiblioteca.model.exceptions.BookNotAvailableForLoanException;
 import br.com.sabrinaweb.appbiblioteca.model.exceptions.InvalidIdException;
+import br.com.sabrinaweb.appbiblioteca.model.exceptions.InvalidLoanException;
 import lombok.extern.log4j.Log4j2;
 
 import java.sql.SQLException;
@@ -61,9 +62,11 @@ public class LibraryLoanService {
             System.out.println("Enter the loan id you want to return");
             Integer id = Integer.parseInt(SCANNER.nextLine());
             LibraryLoan loanFoundById = libraryLoanDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
+
             if (loanFoundById.getStatus().equalsIgnoreCase("devolvido")) {
-                throw new RuntimeException("The book is already returned");
+                throw new InvalidLoanException("The book is already returned");
             }
+
             LibraryLoan libraryLoanToReturn = LibraryLoan.builder()
                     .id(loanFoundById.getId())
                     .status("devolvido")
@@ -71,7 +74,7 @@ public class LibraryLoanService {
                     .build();
             libraryLoanDao.update(libraryLoanToReturn);
             log.info("The return happen with success!");
-        } catch (RuntimeException e) {
+        } catch (NumberFormatException | InvalidLoanException e) {
             log.error(e.getMessage());
         }
     }
@@ -80,8 +83,7 @@ public class LibraryLoanService {
         System.out.println("Enter the status of the book or the loan that you want to find");
         String status = SCANNER.nextLine();
         Map<Integer, Book> booksBorrowedByStatus = libraryLoanDao.findBooksBorrowedByStatus(status);
-
-        booksBorrowedByStatus.forEach((id, book) -> System.out.printf("ID_Loan[%d] Book - %d - %s - %s - %s - %s %n", id, book.getId(), book.getTitle(), book.getGenre(), book.getPublisher(), book.getIsbn()));
+        booksBorrowedByStatus.forEach((id, book) -> System.out.printf("ID_Loan[%d] Book - %d - %s - %s - %s - %s - %s %n", id, book.getId(), book.getTitle(), book.getGenre(), book.getPublisher(), book.getIsbn(), book.getStatus()));
     }
 
     public void findUsersWithMoreThanOneBookBorrowed() {
