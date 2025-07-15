@@ -71,13 +71,20 @@ public class LibraryLoanService {
 
             LibraryLoan libraryLoanToReturn = LibraryLoan.builder()
                     .id(loanFoundById.getId())
+                    .book(loanFoundById.getBook())
+                    .user(loanFoundById.getUser())
                     .status("devolvido")
                     .returnDate(LocalDate.now())
                     .build();
+
+            libraryLoanToReturn.getBook().setStatus("disponível");
+
             libraryLoanDao.update(libraryLoanToReturn);
             log.info("The return happen with success!");
         } catch (NumberFormatException | InvalidLoanException e) {
             log.error(e.getMessage());
+        }catch (SQLException ex){
+            log.info("Error with the connection");
         }
     }
 

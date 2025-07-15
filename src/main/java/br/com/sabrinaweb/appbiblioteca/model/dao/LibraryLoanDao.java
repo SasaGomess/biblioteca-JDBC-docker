@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface LibraryLoanDao {
     void insert(LibraryLoan libraryLoan) throws SQLException;
-    void update(LibraryLoan libraryLoan);
+    void update(LibraryLoan libraryLoan) throws SQLException;
     void deleteById(Integer idLoan);
     List<LibraryLoan> findAllLoan();
     int isLoanBookAvailable(Integer idBook);

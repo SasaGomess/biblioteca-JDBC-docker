@@ -40,7 +40,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
             psUpdateStatus.execute();
 
             conn.commit();
-            log.info("The loan was inserted with success");
+            log.info("The loan was inserted with success!");
         } catch (SQLException e) {
             conn.rollback();
             log.error("Error trying to register the new loan");
@@ -49,16 +49,27 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     }
 
     @Override
-    public void update(LibraryLoan libraryLoan) {
-        try (PreparedStatement ps = conn.prepareStatement("UPDATE `library`.`library_loan` SET status = ? returnDate = ? WHERE id_loan = ? ")) {
-            ps.setString(1, libraryLoan.getStatus());
-            ps.setDate(2, Date.valueOf(libraryLoan.getReturnDate()));
-            ps.setInt(3, libraryLoan.getId());
+    public void update(LibraryLoan libraryLoan) throws SQLException {
+        conn.setAutoCommit(false);
+        try (PreparedStatement psLoan = conn.prepareStatement("UPDATE `library`.`library_loan` SET status = ? returnDate = ? WHERE id_loan = ? ")) {
+            psLoan.setString(1, libraryLoan.getStatus());
+            psLoan.setDate(2, Date.valueOf(libraryLoan.getReturnDate()));
+            psLoan.setInt(3, libraryLoan.getId());
 
-            ps.execute();
+            PreparedStatement psBookStatus = conn.prepareStatement("UPDATE `library`.`book` SET status = ? WHERE id_book = ?");
+            psBookStatus.setString(1, libraryLoan.getBook().getStatus());
+            psBookStatus.setInt(2, libraryLoan.getBook().getId());
+
+            psLoan.execute();
+            psBookStatus.execute();
+
+            conn.commit();
+            log.info("The loan was updated with success!");
         } catch (SQLException e) {
+            conn.rollback();
             log.error("Error trying to update the loan service");
         }
+        conn.setAutoCommit(true);
     }
 
     @Override
