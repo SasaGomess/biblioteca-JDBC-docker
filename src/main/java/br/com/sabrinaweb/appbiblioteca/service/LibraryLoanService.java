@@ -100,5 +100,8 @@ public class LibraryLoanService {
         libraryLoanDao.findUsersWithMoreThanOneBookBorrowed().forEach((ids, user) -> System.out.println("ID of loans: " +ids + ": user: ID["+ user.getId() + "], " + user.getName() + ", " + user.getPhone() + ", " + user.getEmail() + ", " + user.getAddress()));
     }
 
-
+    public void bookBorrowedInTheMoment(){
+        log.info("Books borrowed in the moment found: ");
+        libraryLoanDao.booksBorrowedInTheMoment().forEach(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
+    }
 }

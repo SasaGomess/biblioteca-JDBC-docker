@@ -6,6 +6,7 @@ import br.com.sabrinaweb.appbiblioteca.model.entities.LibraryLoan;
 import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.CharArrayReader;
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
@@ -202,6 +203,31 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
             log.error("Error trying to find the user with more than one book borrowed");
         }
         return usersWithMoreThanOneBooks;
+    }
+
+    @Override
+    public List<Book> booksBorrowedInTheMoment() {
+        List<Book> books = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT bo.* FROM `library`.`book` AS bo INNER JOIN `library`.`library_loan` AS ll ON bo.id_book = ll.id_book WHERE ll.status = 'emprestado' OR ll.status = 'atrasado' AND bo.status = 'indisponível';");
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()){
+                books.add(Book.builder()
+                        .isbn(rs.getString("isbn"))
+                        .title(rs.getString("title"))
+                        .publisher(rs.getString("publisher"))
+                        .year_public(rs.getInt("year_public"))
+                        .status(rs.getString("status"))
+                        .numberPages(rs.getInt("number_pages"))
+                        .id(rs.getInt("id_book"))
+                        .genre(rs.getString("genre"))
+                        .build());
+            }
+
+        } catch (SQLException e) {
+            log.error("Error while trying to find the books borrowed in the moment");
+        }
+        return books;
     }
 
     private PreparedStatement bookAvailablePreparedStatement(Integer idBook) throws SQLException {

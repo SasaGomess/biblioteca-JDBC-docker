@@ -152,7 +152,7 @@ public class MenuMain {
         switch (resp){
             case 1 -> bookService.bookMoreBorrowed();
             case 2 -> userService.findUserWithTheMostLoans();
-//            case 3 ->
+            case 3 -> libraryLoanService.bookBorrowedInTheMoment();
 //            case 4 ->
 //            case 9 ->
 //            default ->
