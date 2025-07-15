@@ -53,7 +53,8 @@ public class UserService {
             System.out.println("Enter the user id to find");
             Integer id = Integer.parseInt(SCANNER.nextLine());
             User userFoundById = userDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
-            log.info(userFoundById);
+            log.info("ID:[{}] - {} - {} - {} - {}", userFoundById.getId(), userFoundById.getName(), userFoundById.getEmail(), userFoundById.getPhone(), userFoundById.getAddress());
+
             System.out.print("Enter the new user name or empty to keep the same: ");
             String name = SCANNER.nextLine();
             System.out.print("Enter the new user email or empty to keep the same: ");
