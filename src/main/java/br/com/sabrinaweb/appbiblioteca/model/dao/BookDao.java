@@ -12,6 +12,7 @@ public interface BookDao {
     List<Book> findAllBooks();
     List<Book> findByTitle(String name);
     List<Book> findAvailableBooks();
-    List<Book> findAllBooksOfAAuthor(Integer id_autor);
+    List<Book> findAllBooksOfAAuthor(Integer id_author);
     Optional<Book> findById(Integer id);
+    Optional<Book> bookMoreBorrowed();
 }

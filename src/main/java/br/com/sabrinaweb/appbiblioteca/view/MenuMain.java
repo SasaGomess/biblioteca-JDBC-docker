@@ -150,8 +150,8 @@ public class MenuMain {
         int resp = Integer.parseInt(SCANNER.nextLine());
 
         switch (resp){
-            case 1 -> libraryLoanService.bookMoreBorrowed();
-//            case 2 ->
+            case 1 -> bookService.bookMoreBorrowed();
+            case 2 -> userService.findUserWithTheMostLoans();
 //            case 3 ->
 //            case 4 ->
 //            case 9 ->

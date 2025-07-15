@@ -42,7 +42,7 @@ public class UserDaoJdbc implements UserDao {
 
     @Override
     public void update(User user) {
-        try (PreparedStatement ps = conn.prepareStatement("UPDATE library.user SET name = ?, email = ?, address = ?, phone = ? WHERE id_user = ?;")){
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE library.user SET name = ?, email = ?, address = ?, phone = ? WHERE id_user = ?;")) {
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getAddress());
@@ -51,7 +51,7 @@ public class UserDaoJdbc implements UserDao {
 
             ps.execute();
             log.info("The user was updated with success");
-        }catch (SQLException e){
+        } catch (SQLException e) {
             log.error("Error trying to update the user '{}' with the id '{}'", user.getName(), user.getId());
         }
     }
@@ -95,9 +95,9 @@ public class UserDaoJdbc implements UserDao {
     public List<User> findByName(String name) {
         List<User> users = new ArrayList<>();
         try (PreparedStatement ps = findByNamePreparedStatement(name);
-            ResultSet rs = ps.executeQuery()){
+             ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()){
+            while (rs.next()) {
                 users.add(User.builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id_user"))
@@ -107,7 +107,7 @@ public class UserDaoJdbc implements UserDao {
                         .build());
             }
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new UserNotFoundException("Error trying to find user by name");
         }
         return users;
@@ -117,8 +117,8 @@ public class UserDaoJdbc implements UserDao {
     public Optional<User> findById(Integer id) {
         log.info("Finding user by id '{}'", id);
         try (PreparedStatement ps = findByIdPreparedStatement(id);
-             ResultSet rs = ps.executeQuery()){
-            if (rs.next()){
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
                 return Optional.of(User.builder()
                         .name(rs.getString("name"))
                         .id(rs.getInt("id_user"))
@@ -128,8 +128,27 @@ public class UserDaoJdbc implements UserDao {
                         .build());
             }
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new UserNotFoundException("Error trying to find user by the id");
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> userWithMostLoans() {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT us.*, COUNT(ll.id_user) AS user_with_most_loans FROM `library`.`user` AS us INNER JOIN `library`.`library_loan` AS ll ON ll.id_user = us.id_user GROUP BY ll.id_user ORDER BY user_with_most_loans DESC LIMIT 1;");
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()){
+                return Optional.of(User.builder()
+                        .id(rs.getInt("id_user"))
+                        .name(rs.getString("name"))
+                        .email(rs.getString("email"))
+                        .phone(rs.getString("phone"))
+                        .address(rs.getString("address"))
+                        .build());
+            }
+        }catch (SQLException e){
+            log.error("Error while trying to find the user with most loans");
         }
         return Optional.empty();
     }
@@ -140,7 +159,8 @@ public class UserDaoJdbc implements UserDao {
         ps.setInt(1, id);
         return ps;
     }
-    private PreparedStatement findByNamePreparedStatement(String name) throws SQLException{
+
+    private PreparedStatement findByNamePreparedStatement(String name) throws SQLException {
         String sql = "SELECT * FROM library.user WHERE name LIKE ?;";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, String.format("%%%s%%", name));

@@ -89,4 +89,8 @@ public class UserService {
            log.error(e.getMessage());
         }
     }
+    public void findUserWithTheMostLoans(){
+        log.info("User found with the most loans: ");
+        userDao.userWithMostLoans().ifPresent(System.out::println);
+    }
 }

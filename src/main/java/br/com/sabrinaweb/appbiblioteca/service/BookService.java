@@ -104,4 +104,8 @@ public class BookService {
             log.error(e.getMessage());
         }
     }
+    public void bookMoreBorrowed(){
+        log.info("Book more borrowed: ");
+        bookDao.bookMoreBorrowed().ifPresent(System.out::println);
+    }
 }

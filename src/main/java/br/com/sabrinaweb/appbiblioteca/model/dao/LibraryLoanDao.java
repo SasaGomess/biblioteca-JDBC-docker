@@ -18,5 +18,4 @@ public interface LibraryLoanDao {
     Optional<LibraryLoan> findById(Integer id);
     Map<Integer, Book> findBooksBorrowedByStatus(String status);
     Map<List<Integer>, User> findUsersWithMoreThanOneBookBorrowed();
-    Optional<Book> bookMoreBorrowed();
 }
