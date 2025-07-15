@@ -211,7 +211,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
         try (PreparedStatement ps = conn.prepareStatement("SELECT bo.* FROM `library`.`book` AS bo INNER JOIN `library`.`library_loan` AS ll ON bo.id_book = ll.id_book WHERE ll.status = 'emprestado' OR ll.status = 'atrasado' AND bo.status = 'indisponível';");
              ResultSet rs = ps.executeQuery()) {
 
-            while (rs.next()){
+            while (rs.next()) {
                 books.add(Book.builder()
                         .isbn(rs.getString("isbn"))
                         .title(rs.getString("title"))
@@ -228,6 +228,33 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
             log.error("Error while trying to find the books borrowed in the moment");
         }
         return books;
+    }
+
+    @Override
+    public List<LibraryLoan> loansLate() {
+        List<LibraryLoan> lateLoans = new ArrayList<>();
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`library_loan` WHERE status = 'atrasado';");
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()){
+                Book book = Book.builder().id(rs.getInt("id_book")).build();
+                User user = User.builder().id(rs.getInt("id_user")).build();
+
+                LibraryLoan loan = LibraryLoan.builder().id(rs.getInt("id_loan"))
+                        .book(book)
+                        .user(user)
+                        .status(rs.getString("status"))
+                        .loanDate(rs.getDate("loan_date").toLocalDate())
+                        .dueDate(rs.getDate("due_date").toLocalDate())
+                        .build();
+
+                loansLate().add(loan);
+            }
+
+        } catch (SQLException e) {
+            log.error("Error while trying to find late loans");
+        }
+        return lateLoans;
     }
 
     private PreparedStatement bookAvailablePreparedStatement(Integer idBook) throws SQLException {

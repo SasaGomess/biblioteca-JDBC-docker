@@ -143,7 +143,7 @@ public class MenuMain {
         System.out.println("1 - Book more borrowed");
         System.out.println("2 - Users with more loan");
         System.out.println("3 - Books borrowed in the moment");
-        System.out.println("4 - Show 5 books");
+        System.out.println("4 - Generate a payment fee for late loans");
         System.out.println("9 - >> Return to the main menu");
 
         System.out.print("RESP: ");
@@ -153,7 +153,7 @@ public class MenuMain {
             case 1 -> bookService.bookMoreBorrowed();
             case 2 -> userService.findUserWithTheMostLoans();
             case 3 -> libraryLoanService.bookBorrowedInTheMoment();
-//            case 4 ->
+            case 4 -> libraryLoanService.penaltyFeeForLateLoans();
 //            case 9 ->
 //            default ->
         }

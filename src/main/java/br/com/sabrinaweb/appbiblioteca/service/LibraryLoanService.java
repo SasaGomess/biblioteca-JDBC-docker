@@ -13,11 +13,14 @@ import lombok.extern.log4j.Log4j2;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 @Log4j2
 public class LibraryLoanService {
@@ -50,6 +53,7 @@ public class LibraryLoanService {
                     .dueDate(LocalDate.now().plusDays(15))
                     .build();
             libraryLoanDao.insert(libraryLoan);
+            log.info("The due date of the loan is: '{}' you should return the book until this date, otherwise the loan will be set as 'atrasado' and a penalty rate will be charged if it exceed 2 days", libraryLoan.getDueDate());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
         }catch (SQLException ex){
@@ -81,6 +85,7 @@ public class LibraryLoanService {
             libraryLoanToReturn.getBook().setStatus("disponível");
 
             libraryLoanDao.update(libraryLoanToReturn);
+
         } catch (NumberFormatException | InvalidLoanException e) {
             log.error(e.getMessage());
         }catch (SQLException ex){
@@ -103,5 +108,13 @@ public class LibraryLoanService {
     public void bookBorrowedInTheMoment(){
         log.info("Books borrowed in the moment found: ");
         libraryLoanDao.booksBorrowedInTheMoment().forEach(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
+    }
+    public void penaltyFeeForLateLoans(){
+        List<LibraryLoan> libraryLoans = libraryLoanDao.loansLate();
+
+        if (!libraryLoans.isEmpty()){
+            libraryLoans.forEach(p -> System.out.println("IDs of late loans >> " + p.getId()));
+            libraryLoans.stream().map(LibraryLoan::getDueDate).map(dueDate -> ChronoUnit.DAYS.between(dueDate, LocalDate.now())).mapToDouble(days -> days > 2L ? days * 0.5 : 0).forEach(totalFee -> System.out.printf("Total fee of the late loan to pay >> R$ %.2f", totalFee));
+        }
     }
 }
