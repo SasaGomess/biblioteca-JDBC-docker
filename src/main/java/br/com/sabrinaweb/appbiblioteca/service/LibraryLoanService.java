@@ -102,6 +102,8 @@ public class LibraryLoanService {
 
     public void bookMoreBorrowed(){
         log.info("Book more borrowed: ");
+
+        
         libraryLoanDao.bookMoreBorrowed().ifPresent(System.out::println);
     }
 }
