@@ -90,7 +90,8 @@ public class BookService {
 
     public void findAvailableBooks(){
         List<Book> availableBooks = bookDao.findAvailableBooks();
-        log.info("The available books found: '{}'", availableBooks);
+        log.info("The available books found: ");
+        availableBooks.forEach(System.out::println);
     }
 
     public void findBookOfAAuthor(){
