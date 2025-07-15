@@ -110,11 +110,11 @@ public class LibraryLoanService {
         libraryLoanDao.booksBorrowedInTheMoment().forEach(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
     }
     public void penaltyFeeForLateLoans(){
-        List<LibraryLoan> libraryLoans = libraryLoanDao.loansLate();
+        List<LibraryLoan> libraryLoans = libraryLoanDao.lateLoans();
 
         if (!libraryLoans.isEmpty()){
-            libraryLoans.forEach(p -> System.out.println("IDs of late loans >> " + p.getId()));
-            libraryLoans.stream().map(LibraryLoan::getDueDate).map(dueDate -> ChronoUnit.DAYS.between(dueDate, LocalDate.now())).mapToDouble(days -> days > 2L ? days * 0.5 : 0).forEach(totalFee -> System.out.printf("Total fee of the late loan to pay >> R$ %.2f", totalFee));
+            libraryLoans.forEach(p -> System.out.println("IDs of late loan(s) >> " + p.getId()));
+            libraryLoans.stream().map(LibraryLoan::getDueDate).map(dueDate -> ChronoUnit.DAYS.between(dueDate, LocalDate.now())).mapToDouble(days -> days > 2L ? days * 0.5 : 0).forEach(totalFee -> System.out.printf("Total fee of the late loan to pay >> R$ %.2f %n", totalFee));
         }
     }
 }

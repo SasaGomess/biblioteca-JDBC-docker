@@ -19,5 +19,5 @@ public interface LibraryLoanDao {
     Map<Integer, Book> findBooksBorrowedByStatus(String status);
     Map<List<Integer>, User> findUsersWithMoreThanOneBookBorrowed();
     List<Book> booksBorrowedInTheMoment();
-    List<LibraryLoan> loansLate();
+    List<LibraryLoan> lateLoans();
 }

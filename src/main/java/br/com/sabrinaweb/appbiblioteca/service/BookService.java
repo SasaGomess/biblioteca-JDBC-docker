@@ -33,7 +33,7 @@ public class BookService {
     }
     public void delete(){
         try {
-            bookDao.findAllBooks().forEach(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
+            bookDao.findAllBooks().forEach(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s, %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
 
             System.out.println("Enter the book id to delete");
             Integer id = Integer.parseInt(SCANNER.nextLine());
@@ -106,6 +106,6 @@ public class BookService {
     }
     public void bookMoreBorrowed(){
         log.info("Book more borrowed: ");
-        bookDao.bookMoreBorrowed().ifPresent(System.out::println);
+        bookDao.bookMoreBorrowed().ifPresent(b -> System.out.printf("ID:[%d] - %s, %s, %s, %s, %d %n", b.getId(), b.getTitle(), b.getIsbn(), b.getGenre(), b.getPublisher(), b.getNumberPages()));
     }
 }

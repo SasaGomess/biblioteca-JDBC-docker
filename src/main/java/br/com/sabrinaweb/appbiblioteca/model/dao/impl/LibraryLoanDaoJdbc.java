@@ -231,7 +231,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
     }
 
     @Override
-    public List<LibraryLoan> loansLate() {
+    public List<LibraryLoan> lateLoans() {
         List<LibraryLoan> lateLoans = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM `library`.`library_loan` WHERE status = 'atrasado';");
              ResultSet rs = ps.executeQuery()) {
@@ -248,7 +248,7 @@ public class LibraryLoanDaoJdbc implements LibraryLoanDao {
                         .dueDate(rs.getDate("due_date").toLocalDate())
                         .build();
 
-                loansLate().add(loan);
+                lateLoans.add(loan);
             }
 
         } catch (SQLException e) {

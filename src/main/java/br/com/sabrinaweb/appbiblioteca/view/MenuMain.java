@@ -35,6 +35,7 @@ public class MenuMain {
                     case 2 -> bookMenu();
                     case 3 -> loanMenu();
                     case 4 -> authorMenu();
+                    case 5 -> reportMenu();
                     case 0 -> System.out.println("Exiting...");
                     default -> throw new IllegalArgumentException("Invalid option you must enter the available options :)");
                 }
@@ -154,8 +155,8 @@ public class MenuMain {
             case 2 -> userService.findUserWithTheMostLoans();
             case 3 -> libraryLoanService.bookBorrowedInTheMoment();
             case 4 -> libraryLoanService.penaltyFeeForLateLoans();
-//            case 9 ->
-//            default ->
+            case 9 -> System.out.println("Coming back to the principal menu...");
+            default -> throw new IllegalArgumentException("Invalid option you must enter the available options :)");
         }
     }
 }

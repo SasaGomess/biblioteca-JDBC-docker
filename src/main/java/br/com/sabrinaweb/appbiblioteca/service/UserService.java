@@ -91,6 +91,6 @@ public class UserService {
     }
     public void findUserWithTheMostLoans(){
         log.info("User found with the most loans: ");
-        userDao.userWithMostLoans().ifPresent(System.out::println);
+        userDao.userWithMostLoans().ifPresent(u -> System.out.printf("ID:[%d] - %s, %s, %s, %s %n", u.getId(), u.getName(), u.getEmail(), u.getPhone(), u.getAddress()));
     }
 }
