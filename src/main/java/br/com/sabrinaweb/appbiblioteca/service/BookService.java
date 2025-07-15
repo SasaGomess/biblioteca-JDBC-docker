@@ -30,6 +30,7 @@ public class BookService {
         int numberOfPages = Integer.parseInt(SCANNER.nextLine());
         Book book = Book.builder().title(title).publisher(publisher).genre(genre).isbn(isbn).year_public(yearOfPublication).numberPages(numberOfPages).build();
         bookDao.insert(book);
+        log.info("The book was registered with success!");
     }
     public void delete(){
         try {
@@ -43,6 +44,7 @@ public class BookService {
             System.out.printf("Are you sure that you want to delete the book: '%d' [Y/N] %n", id);
             String resp = SCANNER.nextLine();
             if (resp.equalsIgnoreCase("y")) bookDao.deleteById(id);
+            log.info("The book was deleted with success");
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
@@ -53,6 +55,8 @@ public class BookService {
             System.out.println("Enter the book id to find");
             Integer id = Integer.parseInt(SCANNER.nextLine());
             Book bookFoundById = bookDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
+            log.info("ID:[{}] - {} - {} - {}", bookFoundById.getId(), bookFoundById.getTitle(), bookFoundById.getIsbn(), bookFoundById.getGenre());
+
             System.out.print("Enter the new book title or empty to keep the same");
             String title = SCANNER.nextLine();
             System.out.print("Enter the new book publisher or empty to keep the same: ");
@@ -70,6 +74,7 @@ public class BookService {
                     .year_public(yearOfPublication)
                     .build();
             bookDao.update(bookToUpdate);
+            log.info("The book was updated with success!");
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
@@ -88,7 +93,7 @@ public class BookService {
         log.info("The available books found: '{}'", availableBooks);
     }
 
-    public void findBookOfAAutor(){
+    public void findBookOfAAuthor(){
         try {
             System.out.print("Enter the author id to find their book: ");
             int idAuthor = Integer.parseInt(SCANNER.nextLine());

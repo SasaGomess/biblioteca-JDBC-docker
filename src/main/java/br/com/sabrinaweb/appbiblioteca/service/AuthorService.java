@@ -27,6 +27,7 @@ public class AuthorService {
 
         Author author = Author.builder().name(name).nationality(nationality).birthdate(LocalDate.parse(birthDate, fmt)).build();
         authorDao.insert(author);
+        log.info("The author was registered with success!");
     }
 
     public void delete() {
@@ -42,6 +43,7 @@ public class AuthorService {
             System.out.print("RESP: ");
             String resp = SCANNER.nextLine();
             if (resp.equalsIgnoreCase("y")) authorDao.deleteById(id);
+            log.info("The author was deleted with success!");
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
@@ -52,7 +54,7 @@ public class AuthorService {
             System.out.println("Enter the author id to find");
             Integer id = Integer.parseInt(SCANNER.nextLine());
             Author authorFoundById = authorDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
-            System.out.printf("ID:[%d] - %s, %s, %s %n", authorFoundById.getId(), authorFoundById.getName(), authorFoundById.getNationality(), authorFoundById.getBirthdate());
+            log.info("ID:[{}] - {} - {} - {}", authorFoundById.getId(), authorFoundById.getName(), authorFoundById.getNationality(), authorFoundById.getBirthdate());
             System.out.println("Enter the new author name or empty to keep the same");
             String name = SCANNER.nextLine();
             System.out.println("Enter the new author nationality or empty to keep the same: ");
@@ -91,7 +93,6 @@ public class AuthorService {
             if (id < 0) throw new InvalidIdException("The id is null or equal 0, you should enter a valid id");
             List<Author> allBooksOfAAuthor = authorDao.findAutorByWroteBook(id);
             log.info("Books found '{}'", allBooksOfAAuthor);
-
         }catch (NumberFormatException e){
             System.out.println(e.getMessage());
         }

@@ -49,6 +49,7 @@ public class LibraryLoanService {
                     .dueDate(LocalDate.now().plusDays(15))
                     .build();
             libraryLoanDao.insert(libraryLoan);
+            log.info("The loan was registered with success!");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
         }catch (SQLException ex){
@@ -62,6 +63,7 @@ public class LibraryLoanService {
             System.out.println("Enter the loan id you want to return");
             Integer id = Integer.parseInt(SCANNER.nextLine());
             LibraryLoan loanFoundById = libraryLoanDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
+            log.info("ID:[{}] - book_ID:{} - user_id:{} - {} - {} - {}", loanFoundById.getId(), loanFoundById.getBook().getId(), loanFoundById.getUser().getId(), loanFoundById.getStatus(), loanFoundById.getDueDate(), loanFoundById.getLoanDate());
 
             if (loanFoundById.getStatus().equalsIgnoreCase("devolvido")) {
                 throw new InvalidLoanException("The book is already returned");
