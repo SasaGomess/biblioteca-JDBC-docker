@@ -1,4 +1,4 @@
-package br.com.sabrinaweb.appbiblioteca.service;
+package br.com.sabrinaweb.appbiblioteca.model.service;
 
 import br.com.sabrinaweb.appbiblioteca.model.dao.BookDao;
 import br.com.sabrinaweb.appbiblioteca.model.dao.DaoFactory;
@@ -75,7 +75,6 @@ public class BookService {
         }catch (NumberFormatException e){
             log.error(e.getMessage());
         }
-
     }
 
     public void findByTitle(){

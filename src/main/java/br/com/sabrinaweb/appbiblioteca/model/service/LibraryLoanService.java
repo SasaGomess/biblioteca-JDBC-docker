@@ -1,4 +1,4 @@
-package br.com.sabrinaweb.appbiblioteca.service;
+package br.com.sabrinaweb.appbiblioteca.model.service;
 
 import br.com.sabrinaweb.appbiblioteca.model.dao.DaoFactory;
 import br.com.sabrinaweb.appbiblioteca.model.dao.LibraryLoanDao;
