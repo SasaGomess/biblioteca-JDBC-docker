@@ -32,7 +32,7 @@ Projeto dedicado a exploração de banco de dados com a API JDBC padrão do Java
 
 ☑️Transações - utilizando o princípio ***ACID*** para garantir que empréstimos e devoluções ocorram garantindo a integridade dos dados. Todas as operações devem ser concluídas com sucesso `commit` caso ao contrário nenhuma é executada `rollback`.
 
-☑️Tratamento de exceções personalizado - criei exceções **unckeads** personalizadas para serem lançadas por meio de erros de validação (id inválido por exemplo), argumentos inválidos(por exemplo deixar de digitar um campo numérico) e cenários específicos da biblioteca(livros não dispopnível para empréstimo, usuário não encontrado etc).   
+☑️Tratamento de exceções personalizado - criei exceções **uncheckeds** personalizadas para serem lançadas por meio de erros de validação (id inválido por exemplo), argumentos inválidos (por exemplo deixar de digitar um campo numérico) e cenários específicos da biblioteca (livro não disponível para empréstimo, usuário não encontrado etc). Além de relançar uma exceção ou exibir um `log de erro` quando uma exceção SQL é capturada.    
 
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/World%20Map.png" alt="World Map" width="25" height="25" /> Arquitetura do projeto
 
@@ -48,7 +48,7 @@ Projeto dedicado a exploração de banco de dados com a API JDBC padrão do Java
  │   │   │   ├── BookDaoJdbc.java
  │   │   │   ├── LibraryLoanDaoJdbc.java
  │   │   │   ├── UserDaoJdbc.java
- │   │   │                # Interfaces Dao e fabrica de Dao para instânciar a implementação concreta
+ │   │   │                # Interfaces Dao e fábrica de Dao para instanciar a implementação concreta
  │   │   ├── AuthorDao.java 
  │   │   ├── BookDao.java
  │   │   ├── DaoFactory.java
@@ -67,13 +67,13 @@ Projeto dedicado a exploração de banco de dados com a API JDBC padrão do Java
  │   │   ├── InvalidIdException.java
  │   │   ├── InvalidLoanException.java
  │   │   ├── UserNotFoundException.java
- │   │
- ├── 📂 service         # Serviços dos Daos (aqui fica a lógica de negócio)
- │   ├── AuthorService.java
- │   ├── BookService.java
- │   ├── LibraryLoanService.java
- │   ├── UserService.java
- │   
+ │   │      
+ │   ├──📂 service         # Serviços dos Daos (aqui fica a lógica de negócio)
+ │      ├──AuthorService.java
+ │      ├──BookService.java
+ │      ├──LibraryLoanService.java
+ │      ├──UserService.java
+ │ 
  ├── 📂 view 
  │  ├── LibraryProgram # Classe para rodar a aplicação
     ├── MenuMain    # Classe com menu de interação via CLI
