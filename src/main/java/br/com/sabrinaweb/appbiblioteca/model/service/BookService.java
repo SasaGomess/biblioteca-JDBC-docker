@@ -16,20 +16,26 @@ public class BookService {
     private final BookDao bookDao = DaoFactory.createBookDao();
 
     public void insert(){
-        System.out.println("Enter the book title to insert");
-        String title = SCANNER.nextLine();
-        System.out.println("Enter the book publisher: ");
-        String publisher = SCANNER.nextLine();
-        System.out.println("Enter the last digit of book isbn: ");
-        String isbn = SCANNER.nextLine();
-        System.out.println("Enter the book genre: ");
-        String genre = SCANNER.nextLine();
-        System.out.println("Enter the book year of publication: ");
-        Integer yearOfPublication = Integer.parseInt(SCANNER.nextLine());
-        System.out.println("Enter the book number of pages: ");
-        int numberOfPages = Integer.parseInt(SCANNER.nextLine());
-        Book book = Book.builder().title(title).publisher(publisher).genre(genre).isbn(isbn).year_public(yearOfPublication).numberPages(numberOfPages).build();
-        bookDao.insert(book);
+        try {
+            System.out.println("Enter the book title to insert");
+            String title = SCANNER.nextLine();
+            System.out.println("Enter the book publisher: ");
+            String publisher = SCANNER.nextLine();
+            System.out.println("Enter the last digit of book isbn: ");
+            String isbn = SCANNER.nextLine();
+            System.out.println("Enter the book genre: ");
+            String genre = SCANNER.nextLine();
+            System.out.println("Enter the book year of publication: ");
+            Integer yearOfPublication = Integer.parseInt(SCANNER.nextLine());
+            System.out.println("Enter the book number of pages: ");
+            int numberOfPages = Integer.parseInt(SCANNER.nextLine());
+
+            if (title.isEmpty() || publisher.isEmpty() || isbn.isEmpty() || genre.isEmpty()) throw new IllegalArgumentException("You need to enter all fields to insert a valid book, otherwise you won't be able to insert the book");
+            Book book = Book.builder().title(title).publisher(publisher).genre(genre).isbn(isbn).year_public(yearOfPublication).numberPages(numberOfPages).build();
+            bookDao.insert(book);
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+        }
     }
     public void delete(){
         try {

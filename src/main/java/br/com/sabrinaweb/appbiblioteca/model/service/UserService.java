@@ -17,16 +17,21 @@ public class UserService {
     private final UserDao userDao = DaoFactory.createUserDao();
 
     public void insert() {
-        System.out.println("Enter the user name to insert");
-        String name = SCANNER.nextLine();
-        System.out.println("Enter the user email: ");
-        String email = SCANNER.nextLine();
-        System.out.println("Enter the user phone: ");
-        String phone = SCANNER.nextLine();
-        System.out.println("Enter the user address: (STREET/CITY/STATE)");
-        String address = SCANNER.nextLine();
-        User user = User.builder().name(name).email(email).phone(phone).address(address).build();
-        userDao.insert(user);
+        try {
+            System.out.println("Enter the user name to insert");
+            String name = SCANNER.nextLine();
+            System.out.println("Enter the user email: ");
+            String email = SCANNER.nextLine();
+            System.out.println("Enter the user phone: ");
+            String phone = SCANNER.nextLine();
+            System.out.println("Enter the user address: (STREET/CITY/STATE)");
+            String address = SCANNER.nextLine();
+            if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty()) throw new IllegalArgumentException("You need to enter all fields to insert a valid user, otherwise you won't be able to insert the user");
+            User user = User.builder().name(name).email(email).phone(phone).address(address).build();
+            userDao.insert(user);
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+        }
     }
 
     public void delete() {

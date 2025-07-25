@@ -18,15 +18,19 @@ public class AuthorService {
     private final AuthorDao authorDao = DaoFactory.createAuthorDao();
 
     public void insert() {
-        System.out.println("Enter the author name to insert");
-        String name = SCANNER.nextLine();
-        System.out.println("Enter the nationality of the author: ");
-        String nationality = SCANNER.nextLine();
-        System.out.println("Enter the author birthdate: (yyyy-MM-dd)");
-        String birthDate = SCANNER.nextLine();
-
-        Author author = Author.builder().name(name).nationality(nationality).birthdate(LocalDate.parse(birthDate, fmt)).build();
-        authorDao.insert(author);
+        try {
+            System.out.println("Enter the author name to insert");
+            String name = SCANNER.nextLine();
+            System.out.println("Enter the nationality of the author: ");
+            String nationality = SCANNER.nextLine();
+            System.out.println("Enter the author birthdate: (yyyy-MM-dd)");
+            String birthDate = SCANNER.nextLine();
+            if (name.isEmpty() | nationality.isEmpty() | birthDate.isEmpty()) throw new IllegalArgumentException("You need to enter all fields to insert a valid author, otherwise you won't be able to insert the author");
+            Author author = Author.builder().name(name).nationality(nationality).birthdate(LocalDate.parse(birthDate, fmt)).build();
+            authorDao.insert(author);
+        }catch (IllegalArgumentException e){
+            log.error(e.getMessage());
+        }
     }
 
     public void delete() {
