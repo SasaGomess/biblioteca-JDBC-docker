@@ -24,15 +24,23 @@ import java.util.stream.DoubleStream;
 
 @Log4j2
 public class LibraryLoanService {
-    private static final Scanner SCANNER = new Scanner(System.in);
-    private static final DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private final LibraryLoanDao libraryLoanDao = DaoFactory.createLoanDao();
+    private Scanner scanner;
+    private LibraryLoanDao libraryLoanDao;
+
+    public LibraryLoanService(Scanner scanner, LibraryLoanDao libraryLoanDao) {
+        this.scanner = scanner;
+        this.libraryLoanDao = libraryLoanDao;
+    }
+
+    public LibraryLoanService() {
+    }
 
     public void registerLoan() {
         try {
             System.out.println("Enter the id of the book you want to insert");
-            Integer idBook = Integer.parseInt(SCANNER.nextLine());
+            Integer idBook = Integer.parseInt(scanner.nextLine());
+            invalidId(idBook);
             if (libraryLoanDao.isLoanBookAvailable(idBook) == 1) {
                 throw new BookNotAvailableForLoanException("Couldn't register the new loan, the book is already borrowed in the moment or it's not available");
             } else if (libraryLoanDao.isLoanBookAvailable(idBook) != 0 && libraryLoanDao.isLoanBookAvailable(idBook) != 1) {
@@ -40,8 +48,8 @@ public class LibraryLoanService {
             }
 
             System.out.println("Enter the user id to insert: ");
-            Integer idUser = Integer.parseInt(SCANNER.nextLine());
-
+            Integer idUser = Integer.parseInt(scanner.nextLine());
+            invalidId(idUser);
             User userToInsert = User.builder().id(idUser).build();
             Book bookToInsert = Book.builder().id(idBook).status("indisponível").build();
 
@@ -54,8 +62,6 @@ public class LibraryLoanService {
                     .build();
             libraryLoanDao.insert(libraryLoan);
             log.info("The due date of the loan is: '{}' you should return the book until this date, otherwise the loan will be set as 'atrasado' and a penalty rate will be charged if it exceed 2 days", libraryLoan.getDueDate());
-        } catch (RuntimeException e) {
-            log.error(e.getMessage());
         }catch (SQLException ex){
             log.error("Error with the connection");
         }
@@ -67,8 +73,9 @@ public class LibraryLoanService {
         try {
             libraryLoanDao.findAllLoan().forEach(l -> System.out.printf("ID: %d, id_book: %d id_user: %d %s %n", l.getId(), l.getBook().getId(), l.getUser().getId(), l.getStatus()));
             System.out.println("Enter the loan id you want to return");
-            Integer id = Integer.parseInt(SCANNER.nextLine());
-            LibraryLoan loanFoundById = libraryLoanDao.findById(id).orElseThrow(() -> new InvalidIdException("The id is invalid"));
+            Integer id = Integer.parseInt(scanner.nextLine());
+            invalidId(id);
+            LibraryLoan loanFoundById = libraryLoanDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Could not find the loan by the specified id"));
 
             if (loanFoundById.getStatus().equalsIgnoreCase("devolvido")) {
                 throw new InvalidLoanException("The book is already returned");
@@ -86,8 +93,6 @@ public class LibraryLoanService {
 
             libraryLoanDao.update(libraryLoanToReturn);
 
-        } catch (NumberFormatException | InvalidLoanException e) {
-            log.error(e.getMessage());
         }catch (SQLException ex){
             log.info("Error with the connection");
         }
@@ -95,7 +100,7 @@ public class LibraryLoanService {
 
     public void findBooksBorrowedByStatus() {
         System.out.println("Enter the status of the book or the loan that you want to find");
-        String status = SCANNER.nextLine();
+        String status = scanner.nextLine();
         Map<Integer, Book> booksBorrowedByStatus = libraryLoanDao.findBooksBorrowedByStatus(status);
         booksBorrowedByStatus.forEach((id, book) -> System.out.printf("ID_Loan[%d] Book - %d - %s - %s - %s - %s - %s %n", id, book.getId(), book.getTitle(), book.getGenre(), book.getPublisher(), book.getIsbn(), book.getStatus()));
     }
@@ -114,7 +119,13 @@ public class LibraryLoanService {
 
         if (!libraryLoans.isEmpty()){
             libraryLoans.forEach(p -> System.out.println("IDs of late loan(s) >> " + p.getId()));
-            libraryLoans.stream().map(LibraryLoan::getDueDate).map(dueDate -> ChronoUnit.DAYS.between(dueDate, LocalDate.now())).mapToDouble(days -> days > 2L ? days * 0.5 : 0).forEach(totalFee -> System.out.printf("Total fee of the late loan to pay >> R$ %.2f %n", totalFee));
+            libraryLoans.stream().map(LibraryLoan::getDueDate)
+                    .map(dueDate -> ChronoUnit.DAYS.between(dueDate, LocalDate.now()))
+                    .mapToDouble(days -> days > 2L ? days * 0.5 : 0)
+                    .forEach(totalFee -> System.out.printf("Total fee of the late loan to pay >> R$ %.2f %n", totalFee));
         }
+    }
+    public void invalidId(Integer id) {
+        if (id <= 0) throw new InvalidIdException("The id is lower or equal 0, you should enter a valid id");
     }
 }
