@@ -173,6 +173,5 @@ class UserServiceTest {
                 .build());
 
         Assertions.assertEquals(users, userDao.findByName(scannerTest));
-
     }
 }
