@@ -29,7 +29,7 @@ public class BookDaoJdbc implements BookDao {
             ps.setString(3, book.getPublisher());
             ps.setString(4, String.format("978-85-0000000-%s", book.getIsbn()));
             ps.setInt(5, book.getNumberPages());
-            ps.setDate(6, new Date(book.getYear_public()));
+            ps.setInt(6, book.getYear_public());
             ps.execute();
             log.info("The book was registered with success!");
         } catch (SQLException e) {
