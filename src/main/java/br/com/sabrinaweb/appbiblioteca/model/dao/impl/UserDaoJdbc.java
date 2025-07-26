@@ -129,7 +129,7 @@ public class UserDaoJdbc implements UserDao {
             }
 
         } catch (SQLException e) {
-            throw new UserNotFoundException("Error trying to find user by the id");
+            log.error(e);
         }
         return Optional.empty();
     }
