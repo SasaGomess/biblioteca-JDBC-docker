@@ -2,6 +2,7 @@ package br.com.sabrinaweb.appbiblioteca.model.service;
 
 import br.com.sabrinaweb.appbiblioteca.model.dao.AuthorDao;
 import br.com.sabrinaweb.appbiblioteca.model.entities.Author;
+import br.com.sabrinaweb.appbiblioteca.model.entities.User;
 import br.com.sabrinaweb.appbiblioteca.model.exceptions.InvalidIdException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -24,7 +26,7 @@ class AuthorServiceTest {
         authorDao = new AuthorDao() {
             @Override
             public void insert(Author author) {
-                System.out.println("Simulated insertion to test the author");
+                System.out.println("Simulated insertion to test the author "+ author.getName());
             }
             @Override
             public void deleteById(Integer id) {
@@ -32,7 +34,7 @@ class AuthorServiceTest {
             }
             @Override
             public void update(Author author) {
-                System.out.println("Simulated updated to test the author");
+                System.out.println("Simulated update to test the author" + author.getName());
             }
             @Override
             public List<Author> findAllAuthors() {
@@ -47,6 +49,9 @@ class AuthorServiceTest {
             @Override
             public Optional<Author> findById(Integer id) {
                 System.out.println("Simulated findById to test the author");
+                if (id == 1){
+                    return Optional.of(Author.builder().id(1).name("").birthdate(LocalDate.now()).nationality("").build());
+                }
                 return Optional.empty();
             }
             @Override
@@ -69,7 +74,7 @@ class AuthorServiceTest {
     @Test
     @DisplayName("If the fields are not empty, an IllegalArgumentException won't be thrown")
     void insert_DoesNotThrowIllegalArgumentException_WhenFieldsAreAllFillIn() {
-        String scannerTest = "ExampleName\nNationality\n2012-03-25";
+        String scannerTest = "Maria Curry\nBritânica\n1960-03-25";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(scannerTest.getBytes());
         Scanner sc = new Scanner(inputStream);
         authorService = new AuthorService(sc, authorDao);
@@ -121,6 +126,15 @@ class AuthorServiceTest {
         Scanner sc = new Scanner(inputStream);
         authorService = new AuthorService(sc, authorDao);
         Assertions.assertThrows(IllegalArgumentException.class, () -> authorService.update());
+    }
+    @Test
+    @DisplayName("If the id is valid, a NumberFormatException shouldn't be thrown")
+    void update_DoNotThrowNumberFormatException_WhenValidId() {
+        String scannerTest = "1\n\n\n\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(scannerTest.getBytes());
+        Scanner sc = new Scanner(inputStream);
+        authorService = new AuthorService(sc, authorDao);
+        Assertions.assertDoesNotThrow(() -> authorService.update());
     }
     @Test
     @DisplayName("If the id is null a NumberFormatException should be thrown")
