@@ -77,6 +77,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("If the fields are empty, an IllegalArgumentException should be thrown")
     void insert_ThrowIllegalArgumentException_WhenFieldsAreEmpty() {
         String scannerTest = "\n\n\n\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(scannerTest.getBytes());
@@ -86,6 +87,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("If the fields are all fill in, an IllegalArgumentException shouldn't be thrown")
     void insert_DoNotThrowIllegalArgumentException_WhenFieldsAreAllFillIn() {
         String scannerTest = "NameUserExample\nemailnoReply.@gmail.com\n1199999999\nStreet, City, State";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(scannerTest.getBytes());
