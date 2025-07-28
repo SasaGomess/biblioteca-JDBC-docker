@@ -136,7 +136,8 @@ docker-compose up
 
 <h3>Menu do Autor <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Woman%20Teacher%20Medium-Light%20Skin%20Tone.png" alt="Woman Teacher Medium-Light Skin Tone" width="30" height="30" /> </h3> 
 
-<img width="247" height="172" alt="Captura de tela 2025-07-26 150020" src="https://github.com/user-attachments/assets/00609502-2305-4813-b152-7c596f5547df" />
+<img width="239" height="169" alt="image" src="https://github.com/user-attachments/assets/98e95b80-6237-46f3-bdc2-558b115ff6af" />
+
 
 
 
