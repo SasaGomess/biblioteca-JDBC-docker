@@ -30,6 +30,10 @@ Projeto dedicado a exploração de banco de dados com a API JDBC padrão do Java
       
 ☑️Design Patterns (padrões de projeto) - `Builder`, `Factory` e `Dao`.
 
+☑️Teste Unitários - Testes unitários realizados na camada `service` onde fica centralizada as regras de negócios, validações e lançamento de exceções. 
+ - Os testes unitários cobrem as classes Service com foco nos principais métodos garantindo que as validações e lançamento de exceções estão corretas conforme o esperado. 
+ - Instanciei classes internas no método `setUp` para representarem as implementações dos `Daos`, para que os testes sejam realizados sem interferir na camada de persistência.
+
 ☑️Transações - utilizando o princípio ***ACID*** para garantir que empréstimos e devoluções ocorram garantindo a integridade dos dados. Todas as operações devem ser concluídas com sucesso `commit` caso ao contrário nenhuma é executada `rollback`.
 
 ☑️Tratamento de exceções personalizado - criei exceções **uncheckeds** personalizadas para serem lançadas por meio de erros de validação (id inválido por exemplo), argumentos inválidos (por exemplo deixar de digitar um campo numérico) e cenários específicos da biblioteca (livro não disponível para empréstimo, usuário não encontrado etc). Além de relançar uma exceção ou exibir um `log de erro` quando uma exceção SQL é capturada.    
@@ -37,46 +41,53 @@ Projeto dedicado a exploração de banco de dados com a API JDBC padrão do Java
 ## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/World%20Map.png" alt="World Map" width="25" height="25" /> Arquitetura do projeto
 
 ```sh
-📂 src/main/java/br/sabrinaweb/appbiblioteca
- ├── 📂 conn        # Classe para o pool de conexões
- │   ├── ConnectionFactory.java
- │   
- ├── 📂 model    # Modelo para manipulação dados, criação de entidades e exceções
- │   ├── 📂 dao
- │   │   ├── 📂impl # Classes de Implementação dos Daos responsáveis pela persistência dos dados
- │   │   │   ├── AuthorDaoJdbc.java
- │   │   │   ├── BookDaoJdbc.java
- │   │   │   ├── LibraryLoanDaoJdbc.java
- │   │   │   ├── UserDaoJdbc.java
- │   │   │                # Interfaces Dao e fábrica de Dao para instanciar a implementação concreta
- │   │   ├── AuthorDao.java 
- │   │   ├── BookDao.java
- │   │   ├── DaoFactory.java
- │   │   ├── LibraryLoanDao.java
- │   │   ├── UserDao.java
- │   │
- │   ├── 📂 entities # Modelo de entidades que representam as tabelas no banco de dados
- │   │   ├── Author.java
- │   │   ├── Book.java
- │   │   ├── LibraryLoan.java
- │   │   ├── User.java
- │   │
- │   ├──📂 exceptions # Exceções personalizadas
- │   │   ├── BookNotAvailableForLoanException.java
- │   │   ├── DbException.java
- │   │   ├── InvalidIdException.java
- │   │   ├── InvalidLoanException.java
- │   │   ├── UserNotFoundException.java
- │   │      
- │   ├──📂 service         # Serviços dos Daos (aqui fica a lógica de negócio)
- │      ├──AuthorService.java
- │      ├──BookService.java
- │      ├──LibraryLoanService.java
- │      ├──UserService.java
- │ 
- ├── 📂 view 
- │  ├── LibraryProgram # Classe para rodar a aplicação
-    ├── MenuMain    # Classe com menu de interação via CLI
+📂 src
+ │  ├──📂main/java/br/sabrinaweb/appbiblioteca
+ │  │   ├──📂 conn        # Classe para o pool de conexões
+ │  │   ├── ConnectionFactory.java
+ │  │   │
+ │  │   ├── 📂 model    # Modelo para manipulação dados, criação de entidades e exceções
+ │  │   │   ├── 📂 dao
+ │  │   │   │   ├── 📂impl # Classes de Implementação dos Daos responsáveis pela persistência dos dados
+ │  │   │    │   │    ├── AuthorDaoJdbc.java
+ │  │   │    │   │    ├── BookDaoJdbc.java
+ │  │   │    │   │    ├── LibraryLoanDaoJdbc.java
+ │  │   │    │   │    ├── UserDaoJdbc.java
+ │  │   │    │   │                      # Interfaces Dao e fábrica de Dao para instanciar a implementação concreta
+ │  │   │    │   ├── AuthorDao.java 
+ │  │   │    │   ├── BookDao.java
+ │  │   │    │   ├── DaoFactory.java
+ │  │   │    │   ├── LibraryLoanDao.java
+ │  │   │    │   ├── UserDao.java
+ │  │   │    │
+ │  │   │    ├── 📂 entities # Modelo de entidades que representam as tabelas no banco de dados
+ │  │   │    │   ├── Author.java
+ │  │   │    │   ├── Book.java
+ │  │   │    │   ├── LibraryLoan.java
+ │  │   │    │   ├── User.java
+ │  │   │    │
+ │  │   │    ├──📂 exceptions # Exceções personalizadas
+ │  │   │    │   ├── BookNotAvailableForLoanException.java
+ │  │   │    │   ├── DbException.java
+ │  │   │    │   ├── InvalidIdException.java
+ │  │   │    │   ├── InvalidLoanException.java
+ │  │   │    │   ├── UserNotFoundException.java
+ │  │   │    │      
+ │  │   │    ├──📂 service         # Serviços dos Daos (aqui fica a lógica de negócio)
+ │  │   │       ├──AuthorService.java
+ │  │   │       ├──BookService.java
+ │  │   │       ├──LibraryLoanService.java
+ │  │   │       ├──UserService.java
+ │  │   │  
+ │  │   ├── 📂 view 
+ │  │        ├── LibraryProgram # Classe para rodar a aplicação
+ │  │        ├── MenuMain    # Classe com menu de interação via CLI
+ │  │
+ │  ├──📂test/java/br/sabrinaweb/appbiblioteca/model/service  # Classes de teste para testar a camada de negócios
+         ├──AuthorService.java
+         ├──BookService.java
+         ├──LibraryLoanService.java
+         ├──UserService.jav
 ```
 ## ⚙️ Como Executar o Projeto
 
@@ -108,7 +119,28 @@ docker-compose up
 ```
 ### Utilizando a aplicação pelo CLI
 
-## Contribuições
+### Menu Principal🔛
+<img width="308" height="221" alt="Captura de tela 2025-07-26 145757" src="https://github.com/user-attachments/assets/94ec3990-0f2f-4c75-857a-5681721106a4" />
+
+### Menu do Empréstimo <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Credit%20Card.png" alt="Credit Card" width="25" height="25" />
+<img width="526" height="153" alt="Captura de tela 2025-07-26 145845" src="https://github.com/user-attachments/assets/6db47666-7d55-4fe2-8671-885cb5552fb4" />
+
+### Menu do Usuário <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Man%20Medium-Light%20Skin%20Tone%2C%20Curly%20Hair.png" alt="Man Medium-Light Skin Tone, Curly Hair" width="35" height="35" />
+<img width="255" height="150" alt="Captura de tela 2025-07-26 145915" src="https://github.com/user-attachments/assets/d829d058-c71c-478c-95ca-d299a0fe0f48" />
+
+### Menu do Livro 📚
+<img width="251" height="196" alt="Captura de tela 2025-07-26 145933" src="https://github.com/user-attachments/assets/91e8011f-8825-466b-9e0d-afa9398a8b4c" />
+
+### Menu do Relatório 📋
+<img width="309" height="150" alt="Captura de tela 2025-07-26 145950" src="https://github.com/user-attachments/assets/b4bbedf9-7e31-4282-8038-b77540fb9466" />
+
+<h3>Menu do Autor <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Woman%20Teacher%20Medium-Light%20Skin%20Tone.png" alt="Woman Teacher Medium-Light Skin Tone" width="30" height="30" /> </h3> 
+
+<img width="247" height="172" alt="Captura de tela 2025-07-26 150020" src="https://github.com/user-attachments/assets/00609502-2305-4813-b152-7c596f5547df" />
+
+
+
+## Contribuições <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Butterfly.png" alt="Butterfly" width="25" height="25" /> <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Cat%20Face.png" alt="Cat Face" width="35" height="35" />
 
 ### Contribuições são sempre bem vindas fique a vontade para contribuir com o projeto!
 
