@@ -97,8 +97,8 @@ public class MenuMain {
     public void userMenu() {
         try {
             System.out.println("1 - Insert new user");
-            System.out.println("2 - Update an user");
-            System.out.println("3 - Delete an user");
+            System.out.println("2 - Update a user");
+            System.out.println("3 - Delete a user");
             System.out.println("4 - Find user by name");
             System.out.println("9 - >> Return to the main menu");
 
@@ -121,8 +121,8 @@ public class MenuMain {
     public void authorMenu() {
         try {
             System.out.println("1 - Insert new author");
-            System.out.println("2 - Update a author");
-            System.out.println("3 - Delete a author");
+            System.out.println("2 - Update an author");
+            System.out.println("3 - Delete an author");
             System.out.println("4 - Find author by name");
             System.out.println("5 - Find author by their book");
             System.out.println("9 - >> Return to the main menu");
