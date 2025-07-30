@@ -141,9 +141,10 @@ docker-compose up
 
 
 
-## Contribuições <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Butterfly.png" alt="Butterfly" width="25" height="25" /> <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Cat%20Face.png" alt="Cat Face" width="35" height="35" />
+<h2>Contribuições <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Butterfly.png" alt="Butterfly" width="25" height="25" /> <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Cat%20Face.png" alt="Cat Face" width="35" height="35" /></h2>  
 
-### Contribuições são sempre bem vindas fique a vontade para contribuir com o projeto!
+
+### Contribuições são sempre bem-vindas fique a vontade para contribuir com o projeto!
 
 1. Faça um fork deste repositório
 2. Crie uma nova branch (git checkout -b minha-feature)
